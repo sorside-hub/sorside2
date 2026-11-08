@@ -1,0 +1,6 @@
+{
+  "name": "sorside",
+  "description": "Personal creative home and independent digital publication of sorside — words, sounds, and everything in between.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
