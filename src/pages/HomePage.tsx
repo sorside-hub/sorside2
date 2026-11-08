@@ -163,13 +163,13 @@ export const HomePage: React.FC = () => {
                   <Link
                     key={trk.id}
                     to={`/music/tracks/${trk.slug}`}
-                    className="flex items-center justify-between py-1 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-stone-100 transition-colors group"
+                    className="flex items-baseline justify-between py-1 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-stone-100 transition-colors group"
                   >
-                    <span className="flex items-center gap-2 truncate">
-                      <span className="text-[10px] font-mono text-stone-400">0{i + 1}.</span>
+                    <span className="flex items-baseline gap-2 truncate">
+                      <span className="text-[10px] font-mono text-stone-400 shrink-0">0{i + 1}.</span>
                       <span className="truncate group-hover:underline">{trk.title}</span>
                     </span>
-                    <span className="text-[10px] font-mono text-stone-400 shrink-0">{trk.duration}</span>
+                    <span className="text-[10px] font-mono text-stone-400 shrink-0 ml-3">{trk.duration}</span>
                   </Link>
                 ))}
               </div>

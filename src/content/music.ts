@@ -8,6 +8,33 @@ import epNadaAntaraCoverImg from '../assets/images/cover_ep_nada_antara_17941568
 
 export const RELEASES: Release[] = [
   {
+    id: 'rel-skenario-dua-puluh-lima',
+    title: 'Skenario Dua Puluh Lima',
+    slug: 'skenario-dua-puluh-lima',
+    releaseType: 'single',
+    releaseDate: '2026-11-08',
+    displayYear: '2026',
+    status: 'released',
+    description: 'Sebuah ode sindiran sosial tentang sengkarut dunia kerja, syarat yang absurd, calo orang dalam, dan beban kenyataan generasi usia dua puluh lima.',
+    coverArtUrl: singleHujanCoverImg,
+    coverArtAlt: 'Sampul single Skenario Dua Puluh Lima berupa sudut ruangan temaram dengan kertas naskah',
+    trackIds: ['trk-skenario-dua-puluh-lima'],
+    credits: [
+      { role: 'Written & Performed by', name: 'Sor' },
+      { role: 'Acoustic Guitar & Vocals', name: 'Sor' },
+      { role: 'Mixing & Mastering', name: 'Studio Antara' },
+    ],
+    behindTheRelease: `Lagu ini lahir dari kejengkolan melihat syarat lowongan kerja yang tidak masuk akal dan fenomena calo serta nepotisme yang merajalela. 
+
+Direkam secara lugas dengan vokal tegas dan petikan gitar akustik yang dinamis, menyuarakan rasa frustrasi banyak anak muda yang hanya ingin mendapat kesempatan yang adil.`,
+    streamingLinks: [
+      { platform: 'Spotify', url: 'https://spotify.com' },
+      { platform: 'Apple Music', url: 'https://music.apple.com' },
+      { platform: 'Bandcamp', url: 'https://bandcamp.com' },
+    ],
+    featured: true,
+  },
+  {
     id: 'rel-hujan-di-balik-jendela',
     title: 'Hujan di Balik Jendela',
     slug: 'hujan-di-balik-jendela',
@@ -157,6 +184,90 @@ Tiap nomor di dalamnya merupakan respons sonik terhadap pengamatan personal tent
 
 export const TRACKS: Track[] = [
   {
+    id: 'trk-skenario-dua-puluh-lima',
+    title: 'Skenario Dua Puluh Lima',
+    slug: 'skenario-dua-puluh-lima',
+    releaseId: 'rel-skenario-dua-puluh-lima',
+    trackNumber: 1,
+    duration: '04:28',
+    status: 'released',
+    description: 'Sindiran sosial bernada tegas tentang sengkarut dunia kerja, syarat absurd, calo, dan nasib angkatan kerja.',
+    audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg',
+    lyrics: `
+[Intro]
+Selamat datang...
+Di gerbang neraka
+Sebut saja Skenario dua puluh lima
+
+[Verse 1]
+Scroll lowongan cuma bikin trauma
+Lempar syarat kerja gak kira-kira
+Tapi upah dibawah uemka banjarnegara
+Cuma bisa ketawa sambil ngelus dada
+
+Umur maksimal dua puluh lima tahun
+Wajib pengalaman dua puluh tahun
+Harus siap bekerja dalam tekanan
+Gak sekalian bisa belah lautan?
+
+Penampilan menarik jadi acuan
+Tinggi seratus enam puluh gak masuk hitungan
+Cari karyawan atau model iklan?
+Dikira jelek gak butuh makan?
+
+[Chorus]
+Skenario dua puluh lima
+Syarat menyiksa, upah menghina
+Diminta sempurna bagai dewa
+Padahal cuma manusia biasa
+
+[Verse 2]
+Calo bertebaran, menawarkan jasa
+"Lima belas juta, besok langsung kerja"
+Cari upah, malah bayar di muka
+Logika yang cuma ada di indonesia
+
+Calo bukan aktor utama, cuma perantara
+Yang bermain duduk di dalam sana
+Siapa di balik meja...?
+Kita semua tahu siapa...
+
+[Chorus]
+Skenario dua puluh lima
+Gerbang saja sudah penuh dusta
+Cari nafkah malah diperdaya
+Padahal cuma pengen kerja
+
+[Verse 3]
+Meritokrasi cuma jadi slogan
+Tutup mata sama titipan paman
+Banyak ujian dan persyaratan
+Padahal dari awal hasil sudah ditentukan
+
+Katanya pengalaman yang jadi acuan
+Tapi tetap kalah sama anak kenalan
+Tes ujian cuma jadi hiasan laporan
+Hasil akhir tetap milik garis keturunan
+
+[Chorus]
+Skenario dua puluh lima
+Yang menang bukan yang paling bisa
+Kenalan menentukan semua
+Padahal cuma pengen adil saja
+
+[Outro]
+Skenario dua puluh lima...
+Dua puluh lima...
+    `.trim(),
+    behindTheSong: 'Diciptakan sebagai respons dan sindiran tajam terhadap sistem rekrutmen kerja yang meresahkan.',
+    credits: [
+      { role: 'Written & Performed by', name: 'Sor' },
+      { role: 'Acoustic Guitar & Vocals', name: 'Sor' },
+    ],
+    relatedWritingIds: ['tentang-hal-hal-yang-terus-kita-tunda', 'menjadi-minato'],
+    streamingLinks: [{ platform: 'Spotify', url: 'https://spotify.com' }],
+  },
+  {
     id: 'trk-hujan-di-balik-jendela',
     title: 'Hujan di Balik Jendela',
     slug: 'hujan-di-balik-jendela',
@@ -192,6 +303,26 @@ Kopi sudah mendingin di sudut meja
 Buku-buku terbuka menatap tanpa kata
 Kita tahu pintu keluar selalu ada
 Namun kaki enggan melangkah ke luar sana
+
+Draf setengah jadi menumpuk di atas kertas
+Gagasan-gagasan yang kita anggap terlalu lekas
+Kita selalu menunggu saat yang paling sempurna
+Padahal waktu tak pernah peduli pada rencana
+
+Dan di ambang pintu ini kita terus berdiri
+Menghitung alasan untuk menunda lagi
+Berapa banyak hari yang terlewat dalam ragu
+Menatap bayangan sendiri yang membeku
+
+Jam dinding berdetak mengikis malam
+Lampu kamar temaram menyisakan diam
+Mungkin keberanian bukan tentang kepastian
+Melainkan kesediaan melangkah dalam ketidaktahuan
+
+Esok saat fajar mulai mengetuk kaca
+Kuharap pintu itu akhirnya terbuka
+Tanpa beban kesempurnaan yang membelenggu
+Cukup satu langkah kecil yang tak lagi menunggu
     `.trim(),
     behindTheSong: 'Ditulis pada suatu pagi ketika menyadari betapa banyaknya hal penting yang saya tunda hanya karena takut hasilnya tidak seperti bayangan di kepala.',
     credits: [{ role: 'Vocals & Acoustic Guitar', name: 'Sor' }],
@@ -213,6 +344,26 @@ Kabel-kabel kusut di atas kepala
 Menyambung ribuan suara yang tak bersua
 Lampu merkuri mulai menyala satu demi satu
 Di bawahnya kita bergegas tanpa tahu arah tuju
+
+Deru klakson menelan derit rem di perempatan
+Orang-orang menatap layar mencari kepastian
+Ada aroma kopi hangat dari balik ruko tua
+Tempat singgah bagi mereka yang lelah berpura-pura
+
+Dan kota ini terus bernapas dalam bisingnya
+Menyembunyikan rahasia di sela gedung-gedung tua
+Kita saling berpapasan namun tak pernah saling tahu
+Berapa banyak beban yang dipikul di balik mantel abu-abu
+
+Langkah kaki beradu dengan aspal yang basah
+Sisa gerimis sore meninggalkan resah
+Setiap sudut jalanan punya ceritanya sendiri
+Sebagian tertulis rapi, sebagian menguap sunyi
+
+Malam merayap pelan di antara tiang listrik
+Menyisakan pantulan cahaya di genangan air
+Kita pulang membawa lelah yang tak sempat dibicarakan
+Menunggu esok pagi datang untuk kembali diulang
     `.trim(),
     behindTheSong: 'Trek pembuka EP ini menggabungkan rekaman suara lapangan (field recording) lalu lintas senja dengan progresi piano elektrik Rhodes.',
     credits: [{ role: 'Piano & Rhodes', name: 'Sor' }],

@@ -1,15 +1,10 @@
 import React, { useMemo } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Search, X, ArrowRight } from 'lucide-react';
 import { ARTICLES } from '../content/articles';
 import { Article } from '../types';
 
-interface CategoryConfig {
-  id: string;
-  label: string;
-}
-
-const CATEGORIES: CategoryConfig[] = [
+const CATEGORIES = [
   { id: 'all', label: 'semua' },
   { id: 'reflection', label: 'refleksi' },
   { id: 'essay', label: 'esai' },
@@ -59,6 +54,67 @@ const getArticleRichPreview = (article: Article): string => {
   return combined;
 };
 
+// Cuplikan cerdas saat pencarian aktif: jika kata kunci ada di isi naskah, potong konteks di sekitarnya
+const getArticleSearchSnippet = (article: Article, query: string): { text: string; isSnippet: boolean } => {
+  if (!query.trim()) {
+    return { text: getArticleRichPreview(article), isSnippet: false };
+  }
+
+  const q = query.toLowerCase().trim();
+
+  // Jika kata kunci ada di judul atau excerpt pembuka, tampilkan pembuka esai normal
+  if (article.title.toLowerCase().includes(q) || article.excerpt.toLowerCase().includes(q)) {
+    return { text: getArticleRichPreview(article), isSnippet: false };
+  }
+
+  // Jika kata kunci ditemukan lebih dalam di isi tulisan (content body)
+  const cleanContent = article.content
+    .replace(/[#*`_>]/g, ' ')
+    .replace(/\s+/g, ' ');
+
+  const matchIndex = cleanContent.toLowerCase().indexOf(q);
+  if (matchIndex !== -1) {
+    const start = Math.max(0, matchIndex - 60);
+    const end = Math.min(cleanContent.length, matchIndex + q.length + 120);
+    const prefix = start > 0 ? '... ' : '';
+    const suffix = end < cleanContent.length ? ' ...' : '';
+    return {
+      text: `${prefix}${cleanContent.slice(start, end).trim()}${suffix}`,
+      isSnippet: true,
+    };
+  }
+
+  return { text: getArticleRichPreview(article), isSnippet: false };
+};
+
+// Helper sorotan teks lembut untuk kata kunci pencarian
+const highlightText = (text: string, query: string): React.ReactNode => {
+  if (!query.trim()) return text;
+
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escaped})`, 'gi');
+  const parts = text.split(regex);
+
+  if (parts.length === 1) return text;
+
+  return (
+    <>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <mark
+            key={i}
+            className="bg-amber-200/80 dark:bg-amber-950/70 text-amber-950 dark:text-amber-100 font-semibold px-0.5 rounded-2xs"
+          >
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+};
+
 export const WritingPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -71,6 +127,7 @@ export const WritingPage: React.FC = () => {
   }, [urlCategoryParam]);
 
   const searchQuery = searchParams.get('q') || '';
+  const isSearching = searchQuery.trim().length > 0;
 
   const filteredArticles = useMemo(() => {
     return ARTICLES.filter((article) => {
@@ -137,7 +194,7 @@ export const WritingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Baris Filter Kategori & Pencarian (Indonesian Minimalist) */}
+      {/* Baris Filter Kategori & Pencarian (Seragam & Presisi dengan Halaman Musik) */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pb-6 mb-10 sm:mb-14 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
         {/* Category Filter Underline Tabs */}
         <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-sans">
@@ -165,27 +222,49 @@ export const WritingPage: React.FC = () => {
           })}
         </div>
 
-        {/* Live Search Input */}
-        <div className="relative w-full md:w-72">
+        {/* Live Search Input (Ukuran & Style Serasi dengan Halaman Musik) */}
+        <div className="relative w-full md:w-80">
           <Search className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={handleSearchChange}
-            placeholder="cari tulisan..."
+            placeholder="cari judul tulisan, esai, topik..."
             className="w-full pl-8 pr-8 py-1.5 bg-stone-100/60 dark:bg-stone-900/40 border border-[#E2DAC8] dark:border-[#2D2B26] rounded-none text-xs font-sans placeholder:text-stone-400 focus:outline-none focus:border-stone-700 dark:focus:border-stone-300 text-stone-900 dark:text-stone-100 transition-colors"
           />
           {searchQuery && (
             <button
               onClick={clearSearch}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 cursor-pointer"
-              aria-label="Hapus pencarian"
+              aria-label="Hapus pencarian tulisan"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
       </div>
+
+      {/* Header Indikator Status Pencarian (Jika Pencarian Aktif) */}
+      {isSearching && (
+        <div className="flex items-center justify-between pb-3 mb-6 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
+          <div>
+            <p className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-500">
+              Pencarian Arsip Tulisan
+            </p>
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">
+              Hasil Pencarian untuk &ldquo;{searchQuery}&rdquo; ({filteredArticles.length} tulisan)
+            </h2>
+          </div>
+
+          <button
+            onClick={resetAllFilters}
+            type="button"
+            className="text-xs font-sans text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 underline cursor-pointer"
+          >
+            Reset Filter & Pencarian
+          </button>
+        </div>
+      )}
 
       {/* Daftar Tulisan: Kiri Judul, Kanan Preview Isi Panjang (Jarak Antar Judul Lega) */}
       {filteredArticles.length > 0 ? (
@@ -196,7 +275,7 @@ export const WritingPage: React.FC = () => {
               const categoryLabel = getCategoryLabel(article.category);
               const dateLabel = formatIndonesianDate(article.date, article.displayDate);
               const readTimeLabel = article.readTime?.replace(/min read/i, 'menit baca') || '';
-              const richPreview = getArticleRichPreview(article);
+              const { text: previewText, isSnippet } = getArticleSearchSnippet(article, searchQuery);
 
               return (
                 <article
@@ -224,14 +303,20 @@ export const WritingPage: React.FC = () => {
                         </div>
 
                         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors leading-[1.22] tracking-tight">
-                          {article.title}
+                          {highlightText(article.title, searchQuery)}
                         </h2>
                       </div>
 
                       {/* SISI KANAN (lg:col-span-7): Preview Isi Panjang & Dalam + Tautan Aksi */}
                       <div className="lg:col-span-7 flex flex-col justify-between pt-0.5">
+                        {isSnippet && (
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1.5 block">
+                            Cuplikan dari isi tulisan:
+                          </span>
+                        )}
+
                         <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 font-sans leading-[1.88] line-clamp-4 sm:line-clamp-5">
-                          {richPreview}
+                          {highlightText(previewText, searchQuery)}
                         </p>
 
                         <div className="mt-5 pt-3.5 border-t border-[#E2DAC8]/60 dark:border-[#2D2B26]/60 flex items-center justify-between">
@@ -239,7 +324,7 @@ export const WritingPage: React.FC = () => {
                             baca lengkap <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                           </span>
                           <span className="text-[11px] font-mono text-stone-400">
-                            {article.readTime}
+                            {readTimeLabel || article.readTime}
                           </span>
                         </div>
                       </div>
@@ -252,22 +337,31 @@ export const WritingPage: React.FC = () => {
 
           {/* Info Status Arsip */}
           <div className="mt-12 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-sans text-stone-500 dark:text-stone-400">
-            <span>Menampilkan {filteredArticles.length} tulisan dari arsip sorside</span>
+            <span>
+              {isSearching
+                ? `Menemukan ${filteredArticles.length} tulisan yang relevan`
+                : `Menampilkan ${filteredArticles.length} tulisan dari arsip sorside`}
+            </span>
             <span className="font-serif italic text-stone-600 dark:text-stone-400">
               &ldquo;Setiap tulisan adalah dokumentasi ruang & waktu.&rdquo;
             </span>
           </div>
         </div>
       ) : (
-        <div className="py-20 text-center">
-          <p className="text-base font-serif italic text-stone-600 dark:text-stone-400">
-            Tidak ada tulisan yang cocok dengan pencarian &ldquo;{searchQuery}&rdquo;.
+        /* Empty State Serasi dengan Halaman Musik */
+        <div className="py-16 text-center border border-dashed border-[#E2DAC8] dark:border-[#2D2B26] p-8 max-w-xl mx-auto bg-[#EFE9DF]/20 dark:bg-[#1A1916]/20 my-8">
+          <p className="text-base sm:text-lg font-serif italic text-stone-800 dark:text-stone-200">
+            Tidak ada tulisan yang cocok dengan kata kunci &ldquo;{searchQuery}&rdquo;.
+          </p>
+          <p className="text-xs text-stone-500 dark:text-stone-400 font-sans mt-2 max-w-md mx-auto leading-relaxed">
+            Coba gunakan kata kunci topik lain (misal: <em>kota</em>, <em>refleksi</em>, <em>menunda</em>, <em>waktu</em>) atau pilih tab kategori di atas.
           </p>
           <button
             onClick={resetAllFilters}
-            className="mt-4 px-4 py-2 text-xs font-sans font-medium text-stone-800 dark:text-stone-200 underline hover:no-underline cursor-pointer"
+            type="button"
+            className="mt-6 px-4 py-2 bg-stone-900 text-stone-50 dark:bg-stone-100 dark:text-stone-900 text-xs font-sans font-semibold tracking-wider uppercase transition-opacity hover:opacity-85 cursor-pointer"
           >
-            reset filter pencarian
+            Reset Pencarian
           </button>
         </div>
       )}
