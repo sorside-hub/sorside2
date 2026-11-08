@@ -2,8 +2,36 @@ import { Release, Track } from '../types/music';
 import { ARTICLES } from './articles';
 import singleCoverImg from '../assets/images/cover_single_langkah_1794089459788.jpg';
 import epCoverImg from '../assets/images/cover_ep_sudut_bayangan_1794089459341.jpg';
+import singleHujanCoverImg from '../assets/images/cover_single_hujan_sore_1794156844086.jpg';
+import albumRuangSunyiCoverImg from '../assets/images/cover_album_ruang_sunyi_1794156845512.jpg';
+import epNadaAntaraCoverImg from '../assets/images/cover_ep_nada_antara_1794156844747.jpg';
 
 export const RELEASES: Release[] = [
+  {
+    id: 'rel-hujan-di-balik-jendela',
+    title: 'Hujan di Balik Jendela',
+    slug: 'hujan-di-balik-jendela',
+    releaseType: 'single',
+    releaseDate: '2026-11-04',
+    displayYear: '2026',
+    status: 'released',
+    description: 'Sebuah nomor akustik lo-fi yang direkam saat hujan deras mengguyur atap seng kamar, menangkap suara rintik air dan petikan nilon yang pelan.',
+    coverArtUrl: singleHujanCoverImg,
+    coverArtAlt: 'Sampul single Hujan di Balik Jendela berupa jendela berembun dengan tetesan air hujan menghadap kota temaram',
+    trackIds: ['trk-hujan-di-balik-jendela'],
+    credits: [
+      { role: 'Written & Performed by', name: 'Sor' },
+      { role: 'Field Recording (Rain)', name: 'Sor' },
+      { role: 'Mastering', name: 'Studio Kamar' },
+    ],
+    behindTheRelease: 'Direkam tanpa rencana ketika hujan tiba-tiba turun di sore hari. Mikrofon diletakkan tepat di ambang jendela kayu.',
+    streamingLinks: [
+      { platform: 'Spotify', url: 'https://spotify.com' },
+      { platform: 'Apple Music', url: 'https://music.apple.com' },
+      { platform: 'Bandcamp', url: 'https://bandcamp.com' },
+    ],
+    featured: true,
+  },
   {
     id: 'rel-langkah-yang-tertinggal',
     title: 'Langkah yang Tertinggal',
@@ -70,9 +98,85 @@ Tiap nomor di dalamnya merupakan respons sonik terhadap pengamatan personal tent
     ],
     featured: true,
   },
+  {
+    id: 'rel-gema-ruang-sunyi',
+    title: 'Gema Ruang Sunyi',
+    slug: 'gema-ruang-sunyi',
+    releaseType: 'album',
+    releaseDate: '2026-08-20',
+    displayYear: '2026',
+    status: 'released',
+    description: 'Album penuh perdana yang mendokumentasikan akustik ruang berdinding beton, gema sunyi di tengah malam, dan dialog batin tentang arti pulang.',
+    coverArtUrl: albumRuangSunyiCoverImg,
+    coverArtAlt: 'Sampul Album Gema Ruang Sunyi berupa gitar akustik bersandar pada dinding beton dengan sorot sinar matahari diagonal',
+    trackIds: [
+      'trk-sebuah-awal-yang-ragu',
+      'trk-lorong-dan-bayangan',
+      'trk-gitar-tua-sudut-kamar',
+    ],
+    credits: [
+      { role: 'Music & Concept', name: 'Sor' },
+      { role: 'Acoustic Guitar, Ambient Synth', name: 'Sor' },
+      { role: 'Location', name: 'Studio Beton Selatan' },
+    ],
+    behindTheRelease: 'Album penuh ini direkam di sebuah bangunan beton terbengkalai pada dini hari, memanfaatkan reverberasi alami dinding semen.',
+    streamingLinks: [
+      { platform: 'Spotify', url: 'https://spotify.com' },
+      { platform: 'Apple Music', url: 'https://music.apple.com' },
+      { platform: 'Bandcamp', url: 'https://bandcamp.com' },
+    ],
+    featured: true,
+  },
+  {
+    id: 'rel-tahun-yang-tenang',
+    title: 'Tahun-Tahun yang Tenang',
+    slug: 'tahun-yang-tenang',
+    releaseType: 'ep',
+    releaseDate: '2026-05-12',
+    displayYear: '2026',
+    status: 'released',
+    description: 'Kumpulan nomor akustik fingerstyle mentah dengan gitar senar baja tua, merefleksikan fase hidup yang melambat setelah badai kesibukan.',
+    coverArtUrl: epNadaAntaraCoverImg,
+    coverArtAlt: 'Sampul EP Tahun-Tahun yang Tenang berupa leher gitar akustik tua bersandar di dinding semen usang bertekstur',
+    trackIds: [
+      'trk-senar-berkarat',
+      'trk-suara-kayu-dan-senja',
+    ],
+    credits: [
+      { role: 'Guitar & Arrangement', name: 'Sor' },
+      { role: 'Recording', name: 'Rumah Kayu Pinggir Kota' },
+    ],
+    behindTheRelease: 'Dua komposisi gitar instrumental yang dimainkan dengan tempo sangat lambat, direkam dengan tape recorder portabel.',
+    streamingLinks: [
+      { platform: 'Spotify', url: 'https://spotify.com' },
+      { platform: 'Bandcamp', url: 'https://bandcamp.com' },
+    ],
+    featured: false,
+  },
 ];
 
 export const TRACKS: Track[] = [
+  {
+    id: 'trk-hujan-di-balik-jendela',
+    title: 'Hujan di Balik Jendela',
+    slug: 'hujan-di-balik-jendela',
+    releaseId: 'rel-hujan-di-balik-jendela',
+    trackNumber: 1,
+    duration: '03:55',
+    status: 'released',
+    description: 'Petikan lambat gitar nilon diiringi rekaman rintik air hujan asli di luar kamar.',
+    audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg',
+    lyrics: `
+Rintik mengetuk kaca tanpa tergesa
+Mengaburkan lampu jalan di bawah sana
+Secangkir teh yang mengepul perlahan reda
+Kita menunggu sesuatu yang tak tentu ada
+    `.trim(),
+    behindTheSong: 'Diciptakan secara spontan ketika hujan lebat turun mengguyur kaca jendela kamar kerja.',
+    credits: [{ role: 'Vocals & Guitar', name: 'Sor' }],
+    relatedWritingIds: ['catatan-dari-ruang-tengah'],
+    streamingLinks: [{ platform: 'Spotify', url: 'https://spotify.com' }],
+  },
   {
     id: 'trk-langkah-yang-tertinggal',
     title: 'Langkah yang Tertinggal',
@@ -82,36 +186,17 @@ export const TRACKS: Track[] = [
     duration: '03:42',
     status: 'released',
     description: 'Petikan gitar solo dan vokal lirih mengenai momen ketika kita tahu harus beranjak namun tetap diam.',
-    audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg', // Sample preview stream
+    audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg',
     lyrics: `
 Kopi sudah mendingin di sudut meja
 Buku-buku terbuka menatap tanpa kata
 Kita tahu pintu keluar selalu ada
 Namun kaki enggan melangkah ke luar sana
-
-Berapa kali kita menunda hari esok?
-Menunggu keberanian yang tak kunjung mengetuk
-Di antara rencana dan bayang ketakutan
-Kita memilih aman di balik keheningan
-
-Mungkin bukan jalannya yang terlampau jauh
-Hanya saja diri ini belum siap rapuh
-Langkah yang tertinggal di ujung senja
-Menunggu dijemput oleh yang bernama rela
     `.trim(),
-    behindTheSong: `
-Ditulis pada suatu pagi ketika menyadari betapa banyaknya hal penting yang saya tunda hanya karena takut hasilnya tidak seperti bayangan di kepala. Melodi gitar ini muncul pertama kali di nada dasar D mayor terbuka (open D), memberikan ruang dengar yang lega dan sedikit murung.
-    `.trim(),
-    credits: [
-      { role: 'Vocals & Acoustic Guitar', name: 'Sor' },
-      { role: 'Songwriter', name: 'Sor' },
-      { role: 'Recording Engineer', name: 'Sor' },
-    ],
+    behindTheSong: 'Ditulis pada suatu pagi ketika menyadari betapa banyaknya hal penting yang saya tunda hanya karena takut hasilnya tidak seperti bayangan di kepala.',
+    credits: [{ role: 'Vocals & Acoustic Guitar', name: 'Sor' }],
     relatedWritingIds: ['tentang-hal-hal-yang-terus-kita-tunda'],
-    streamingLinks: [
-      { platform: 'Spotify', url: 'https://spotify.com' },
-      { platform: 'Apple Music', url: 'https://music.apple.com' },
-    ],
+    streamingLinks: [{ platform: 'Spotify', url: 'https://spotify.com' }],
   },
   {
     id: 'trk-kota-dan-lampu-jalan',
@@ -128,25 +213,11 @@ Kabel-kabel kusut di atas kepala
 Menyambung ribuan suara yang tak bersua
 Lampu merkuri mulai menyala satu demi satu
 Di bawahnya kita bergegas tanpa tahu arah tuju
-
-Aspal basah memantulkan jingga yang pecah
-Kota menampung lelah tanpa pernah membantah
-Kita adalah angka yang berjalan cepat
-Mencari sudut sepi sebelum malam merapat
     `.trim(),
-    behindTheSong: `
-Trek pembuka EP ini menggabungkan rekaman suara lapangan (field recording) lalu lintas senja dengan progresi piano elektrik Rhodes. Saya ingin menghadirkan rasa keterasingan yang aneh tapi akrab saat berada di tengah kerumunan kota besar.
-    `.trim(),
-    credits: [
-      { role: 'Piano & Rhodes', name: 'Sor' },
-      { role: 'Field Recording', name: 'Sor' },
-      { role: 'Mixer', name: 'Studio Antara' },
-    ],
+    behindTheSong: 'Trek pembuka EP ini menggabungkan rekaman suara lapangan (field recording) lalu lintas senja dengan progresi piano elektrik Rhodes.',
+    credits: [{ role: 'Piano & Rhodes', name: 'Sor' }],
     relatedWritingIds: ['kita-dan-kota-ini'],
-    streamingLinks: [
-      { platform: 'Spotify', url: 'https://spotify.com' },
-      { platform: 'Bandcamp', url: 'https://bandcamp.com' },
-    ],
+    streamingLinks: [{ platform: 'Spotify', url: 'https://spotify.com' }],
   },
   {
     id: 'trk-dialog-tengah-malam',
@@ -158,18 +229,10 @@ Trek pembuka EP ini menggabungkan rekaman suara lapangan (field recording) lalu 
     status: 'released',
     description: 'Komposisi gitar akustik fingerstyle yang intim dalam suasana ruang tengah saat semua orang telah terlelap.',
     audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg',
-    behindTheSong: `
-Komposisi murni instrumental. Direkam langsung tanpa jeda saat jarum jam menunjuk pukul 02.00 dini hari. Suara gesekan jari pada fret tembaga sengaja dipertahankan sebagai bagian dari kejujuran bunyi.
-    `.trim(),
-    credits: [
-      { role: 'Fingerstyle Acoustic Guitar', name: 'Sor' },
-      { role: 'Arrangement', name: 'Sor' },
-    ],
+    behindTheSong: 'Komposisi murni instrumental. Direkam langsung tanpa jeda saat jarum jam menunjuk pukul 02.00 dini hari.',
+    credits: [{ role: 'Fingerstyle Acoustic Guitar', name: 'Sor' }],
     relatedWritingIds: ['catatan-dari-ruang-tengah'],
-    streamingLinks: [
-      { platform: 'Spotify', url: 'https://spotify.com' },
-      { platform: 'Apple Music', url: 'https://music.apple.com' },
-    ],
+    streamingLinks: [{ platform: 'Spotify', url: 'https://spotify.com' }],
   },
   {
     id: 'trk-di-balik-keraguan',
@@ -186,25 +249,81 @@ Siapa bilang harus tahu segalanya sekarang?
 Bahkan ombak tak pernah berjanji kapan pulang
 Kita menuntut peta di tengah kabut tebal
 Padahal melangkah perlahan sudah cukup kekal
-
-Biar saja ragu duduk di sampingmu
-Ia bukan musuh yang perlu kau buru
-Di balik bimbang ada ruang untuk tumbuh
-Menjadi manusia yang utuh dan teduh
     `.trim(),
-    behindTheSong: `
-Lagu ini terlahir dari perbincangan panjang tentang tekanan untuk selalu tampak yakin di mata masyarakat. Diciptakan dengan gitar akustik bernada rendah dan harmonisasi vokal ganda di bagian refrain.
-    `.trim(),
-    credits: [
-      { role: 'Vocals & Acoustic Guitar', name: 'Sor' },
-      { role: 'Bass', name: 'R. Ramadhan' },
-      { role: 'Producer', name: 'Sor' },
-    ],
+    behindTheSong: 'Lagu ini terlahir dari perbincangan panjang tentang tekanan untuk selalu tampak yakin di mata masyarakat.',
+    credits: [{ role: 'Vocals & Acoustic Guitar', name: 'Sor' }],
     relatedWritingIds: ['merayakan-keraguan'],
-    streamingLinks: [
-      { platform: 'Spotify', url: 'https://spotify.com' },
-      { platform: 'YouTube Music', url: 'https://music.youtube.com' },
-    ],
+    streamingLinks: [{ platform: 'Spotify', url: 'https://spotify.com' }],
+  },
+  {
+    id: 'trk-sebuah-awal-yang-ragu',
+    title: 'Sebuah Awal yang Ragu',
+    slug: 'sebuah-awal-yang-ragu',
+    releaseId: 'rel-gema-ruang-sunyi',
+    trackNumber: 1,
+    duration: '03:22',
+    status: 'released',
+    description: 'Pembuka album bernuansa ambient drone dengan petikan nilon tunggal.',
+    audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg',
+    behindTheSong: 'Menangkap keheningan pertama sebelum nada-nada lain di album ini bermunculan.',
+    credits: [{ role: 'Composer', name: 'Sor' }],
+    streamingLinks: [{ platform: 'Spotify', url: 'https://spotify.com' }],
+  },
+  {
+    id: 'trk-lorong-dan-bayangan',
+    title: 'Lorong dan Bayangan Beton',
+    slug: 'lorong-dan-bayangan',
+    releaseId: 'rel-gema-ruang-sunyi',
+    trackNumber: 2,
+    duration: '04:40',
+    status: 'released',
+    description: 'Eksplorasi gema dan resonansi senar gitar di koridor semen kosong.',
+    audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg',
+    behindTheSong: 'Direkam tengah malam di lantai basement studio.',
+    credits: [{ role: 'Acoustic Guitar & Reverb', name: 'Sor' }],
+    streamingLinks: [{ platform: 'Spotify', url: 'https://spotify.com' }],
+  },
+  {
+    id: 'trk-gitar-tua-sudut-kamar',
+    title: 'Gitar Tua di Sudut Kamar',
+    slug: 'gitar-tua-sudut-kamar',
+    releaseId: 'rel-gema-ruang-sunyi',
+    trackNumber: 3,
+    duration: '03:15',
+    status: 'released',
+    description: 'Melodi akustik hangat yang santai dan apa adanya.',
+    audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg',
+    behindTheSong: 'Dimainkan santai sambil menatap langit senja dari jendela.',
+    credits: [{ role: 'Solo Guitar', name: 'Sor' }],
+    streamingLinks: [{ platform: 'Spotify', url: 'https://spotify.com' }],
+  },
+  {
+    id: 'trk-senar-berkarat',
+    title: 'Senar Berkarat',
+    slug: 'senar-berkarat',
+    releaseId: 'rel-tahun-yang-tenang',
+    trackNumber: 1,
+    duration: '03:30',
+    status: 'released',
+    description: 'Akustik bertempo lambat dengan nada-nada blues lembut dan gesekan jari yang khas.',
+    audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg',
+    behindTheSong: 'Menggunakan gitar lama yang tidak pernah diganti senarnya selama setahun, menghasilkan nada yang tumpul tapi intim.',
+    credits: [{ role: 'Guitar', name: 'Sor' }],
+    streamingLinks: [{ platform: 'Bandcamp', url: 'https://bandcamp.com' }],
+  },
+  {
+    id: 'trk-suara-kayu-dan-senja',
+    title: 'Suara Kayu dan Senja',
+    slug: 'suara-kayu-dan-senja',
+    releaseId: 'rel-tahun-yang-tenang',
+    trackNumber: 2,
+    duration: '03:48',
+    status: 'released',
+    description: 'Penutup EP dengan harmoni lembut dan ketukan jari pada bodi kayu gitar.',
+    audioUrl: 'https://actions.google.com/sounds/v1/ambient/rain_heavy.ogg',
+    behindTheSong: 'Direkam saat senja di beranda rumah panggung tua.',
+    credits: [{ role: 'Guitar & Percussion', name: 'Sor' }],
+    streamingLinks: [{ platform: 'Bandcamp', url: 'https://bandcamp.com' }],
   },
 ];
 

@@ -1,110 +1,208 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Mail } from 'lucide-react';
+import { ArrowRight, Mail, BookOpen, Music, Disc3, Compass } from 'lucide-react';
 import { ABOUT_PORTRAIT_IMAGE } from '../content/articles';
 
 export const AboutPage: React.FC = () => {
   return (
-    <div className="max-w-4xl mx-auto px-6 sm:px-8 py-10 sm:py-16">
-      {/* Header */}
-      <div className="mb-12">
-        <p className="text-[11px] sm:text-xs font-sans tracking-[0.2em] uppercase text-stone-500 dark:text-stone-400 mb-2">
-          Identity & Archive
-        </p>
-        <h1 className="text-4xl sm:text-5xl font-serif font-bold text-stone-900 dark:text-stone-100">
-          About sorside.
-        </h1>
-        <p className="mt-3 text-lg font-serif italic text-stone-600 dark:text-stone-400">
-          &ldquo;Every side has a story.&rdquo;
-        </p>
+    <div className="w-full px-6 lg:px-12 xl:px-16 py-8 sm:py-12 lg:py-16 bg-[#F4EFEA] dark:bg-[#161513] transition-colors">
+      {/* 1. HEADER & PERNYATAAN SIKAP (FULL-WIDTH MASTHEAD) */}
+      <div className="mb-12 sm:mb-16 pb-8 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
+        <div className="max-w-4xl">
+          <p className="text-[10px] sm:text-[11px] font-sans tracking-[0.22em] uppercase text-stone-500 dark:text-stone-400 mb-2">
+            manifesto & identitas · sorside
+          </p>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 dark:text-stone-100 tracking-tight leading-tight">
+            tentang sorside<span className="text-stone-400 dark:text-stone-600 font-normal">.</span>
+          </h1>
+          <blockquote className="mt-4 text-base sm:text-xl lg:text-2xl font-serif italic text-stone-700 dark:text-stone-300 leading-relaxed max-w-3xl">
+            &ldquo;Sebuah ruang mandiri untuk merawat pemikiran, merekam suara-suara kota, dan mendokumentasikan apa yang tak sempat diucapkan.&rdquo;
+          </blockquote>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
-        {/* Left Column: Portrait & Details */}
-        <div className="md:col-span-5 flex flex-col space-y-6">
-          <div className="overflow-hidden bg-stone-200 dark:bg-stone-800 shadow-sm">
+      {/* 2. PROFIL SINEMATIK & NARASI LAHIRNYA SORSIDE (ASYMMETRICAL 2-COLUMN) */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start pb-16 sm:pb-24 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
+        {/* Kolom Kiri: Potret & Kartu Data Studio */}
+        <div className="lg:col-span-5 flex flex-col space-y-6">
+          {/* Potret Siluet Sor */}
+          <div className="overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8] dark:border-[#2D2B26] shadow-sm relative group">
             <img
               src={ABOUT_PORTRAIT_IMAGE}
-              alt="Portrait silhouette of author looking out over city"
-              className="w-full h-80 object-cover grayscale-[20%]"
-              loading="lazy"
+              alt="Potret siluet Sor memandang cakrawala kota"
+              className="w-full h-80 sm:h-96 lg:h-[440px] object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
+              loading="eager"
               referrerPolicy="no-referrer"
             />
+            <div className="absolute bottom-3 left-3 px-2 py-1 bg-stone-900/80 text-white text-[9px] font-mono uppercase tracking-wider">
+              Dokumentasi Studio · Sorside
+            </div>
           </div>
 
-          <div className="p-4 border border-[#E2DAC8] dark:border-[#2D2B26] text-xs font-sans text-stone-600 dark:text-stone-400 space-y-2">
-            <div>
-              <span className="font-semibold text-stone-900 dark:text-stone-200">Creative Identity:</span> sorside
+          {/* Kartu Arsip Redaksi */}
+          <div className="p-5 bg-[#EFE9DF]/60 dark:bg-[#1A1916]/60 border border-[#E2DAC8] dark:border-[#2D2B26] text-xs font-sans text-stone-600 dark:text-stone-400 space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-[#E2DAC8]/70 dark:border-[#2D2B26]/70">
+              <span className="font-semibold text-stone-900 dark:text-stone-200">Nama Imprint</span>
+              <span className="font-serif italic text-stone-800 dark:text-stone-300">sorside.</span>
             </div>
-            <div>
-              <span className="font-semibold text-stone-900 dark:text-stone-200">Discipline:</span> Writing, Music
+            <div className="flex items-center justify-between pb-2 border-b border-[#E2DAC8]/70 dark:border-[#2D2B26]/70">
+              <span className="font-semibold text-stone-900 dark:text-stone-200">Inisiator & Pengkarya</span>
+              <span>Sor</span>
             </div>
-            <div>
-              <span className="font-semibold text-stone-900 dark:text-stone-200">Established:</span> 2026
+            <div className="flex items-center justify-between pb-2 border-b border-[#E2DAC8]/70 dark:border-[#2D2B26]/70">
+              <span className="font-semibold text-stone-900 dark:text-stone-200">Disiplin / Medium</span>
+              <span>Esai, Tulisan Reflektif, Musik Akustik</span>
+            </div>
+            <div className="flex items-center justify-between pb-2 border-b border-[#E2DAC8]/70 dark:border-[#2D2B26]/70">
+              <span className="font-semibold text-stone-900 dark:text-stone-200">Lokasi Rekam</span>
+              <span>Kamar Sisi Selatan</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-stone-900 dark:text-stone-200">Berdiri Sejak</span>
+              <span className="font-mono">2026</span>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Narrative */}
-        <div className="md:col-span-7 font-sans text-base sm:text-lg leading-[1.8] text-stone-700 dark:text-stone-300 space-y-6">
+        {/* Kolom Kanan: Esai Manifesto Personal */}
+        <div className="lg:col-span-7 font-sans text-sm sm:text-base leading-[1.9] text-stone-700 dark:text-stone-300 space-y-6">
           <div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 dark:text-stone-100 mb-3">
-              Sebuah ruang independen untuk merawat pemikiran.
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-2">
+              01 · Latar Belakang
+            </span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-100 mb-4 leading-snug">
+              Bukan ruang bising yang menuntut algoritma.
             </h2>
-            <p>
-              Sorside adalah ruang untuk menyimpan dan membagikan sisi-sisi dari Sor melalui tulisan, pengamatan personal, dan eksplorasi musik.
+            <p className="text-stone-800 dark:text-stone-200 text-base sm:text-lg font-serif italic leading-relaxed">
+              Sorside lahir dari keinginan sederhana: memiliki satu sudut tenang di internet di mana kata-kata dan bunyi tidak diukur oleh metrik viralitas atau keharusan untuk menyenangkan semua orang.
             </p>
           </div>
 
           <p>
-            Nama sorside berasal dari Sor, sebuah panggilan, dan Side, yang berarti sisi. Sebuah identitas yang mewakili berbagai hal yang membentuk satu individu. Tidak terpaku pada satu minat, satu bentuk ekspresi, atau satu cara berkarya.
+            Nama <span className="font-serif font-bold text-stone-900 dark:text-stone-100">sorside</span> berakar dari dua hal: <span className="italic">Sor</span>, nama panggilan saya, dan <span className="italic">Side</span>, yang berarti sisi-sisi. Setiap manusia adalah gabungan dari banyak sisi—ada sisi yang kita tampilkan dengan rapi di hadapan publik, dan ada sisi yang hanya berani berbisik di larut malam ketika lampu jalan mulai menyala dan deru kota mereda.
           </p>
 
           <p>
-            Situs ini menjadi rumah digital bagi berbagai gagasan dan karya yang lahir dari pengalaman, pengamatan, serta kegelisahan sehari-hari. Sebuah tempat untuk menyimpan sesuatu yang mungkin terlalu sayang untuk dibiarkan berlalu begitu saja.
+            Di era di mana kita terus-menerus didesak untuk memadatkan pemikiran menjadi potongan konten 15 detik, saya merasa kehilangan ruang untuk berpikir secara utuh. Sorside adalah tempat saya mengembalikan waktu: menulis esai yang membutuhkan jeda napas, merekam petikan gitar yang tidak dipoles autotune, dan mengamati kota dari jendela kamar tanpa tergesa-gesa.
           </p>
 
-          <h3 className="text-xl font-serif font-bold text-stone-900 dark:text-stone-100 pt-4">
-            Eksplorasi yang Berjalan
-          </h3>
-
-          <ul className="space-y-4 text-sm sm:text-base">
-            <li className="flex items-start gap-2.5">
-              <span className="text-stone-400 dark:text-stone-500 font-mono text-sm pt-0.5">01.</span>
-              <div>
-                <strong className="text-stone-900 dark:text-stone-100 font-serif text-base block mb-0.5">Writing</strong>
-                <p className="text-stone-600 dark:text-stone-400">
-                  Ruang untuk mengurai pikiran, menuangkan keresahan, dan merangkai pengalaman menjadi tulisan.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-2.5">
-              <span className="text-stone-400 dark:text-stone-500 font-mono text-sm pt-0.5">02.</span>
-              <div>
-                <strong className="text-stone-900 dark:text-stone-100 font-serif text-base block mb-0.5">Music</strong>
-                <p className="text-stone-600 dark:text-stone-400">
-                  Ruang untuk mengekspresikan berbagai hal melalui musik.
-                </p>
-              </div>
-            </li>
-          </ul>
-
-          <div className="pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26] flex flex-wrap items-center gap-6">
-            <Link
-              to="/writing"
-              className="inline-flex items-center gap-2 text-sm font-sans font-medium text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-400 transition-colors"
-            >
-              Explore Writing Archive <ArrowRight className="w-4 h-4" />
-            </Link>
-            <a
-              href="mailto:contact@sorside.com"
-              className="inline-flex items-center gap-2 text-sm font-sans text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
-            >
-              <Mail className="w-4 h-4" /> Say hello
-            </a>
+          <div className="pt-4">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-2">
+              02 · Pendekatan Berkarya
+            </span>
+            <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 mb-3">
+              Merawat kejujuran di antara ragu.
+            </h3>
+            <p>
+              Karya di sorside tidak berpretensi memberikan nasihat hidup atau panduan kesuksesan. Tulisan dan musik di sini lebih mirip catatan harian terbuka—tentang bagaimana kita belajar berdamai dengan ketidakpastian, tentang orang-orang yang diam-diam membentuk kita, dan tentang rasa sepi yang ternyata dialami oleh hampir semua orang yang berpapasan di trotoar.
+            </p>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* 3. DUA SAYAP KARYA: TULISAN VS MUSIK (TWO BROAD COLUMNS) */}
+      <section className="pb-16 sm:pb-24 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
+        <div className="flex items-center justify-between pb-3 mb-8 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
+          <div>
+            <p className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-500">
+              Dua Bentuk Ekspresi
+            </p>
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">
+              Kata & Bunyi di Sorside
+            </h2>
+          </div>
+          <span className="text-xs font-serif italic text-stone-500 hidden sm:block">
+            Dua medium yang saling melengkapi
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          {/* Kolom 1: Tulisan */}
+          <div className="p-6 sm:p-8 bg-[#EFE9DF]/50 dark:bg-[#1A1916]/50 border border-[#E2DAC8] dark:border-[#2D2B26] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between gap-4 mb-4 pb-2 border-b border-[#E2DAC8]/70 dark:border-[#2D2B26]/70">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+                  01 · Katalog Tulisan
+                </span>
+                <BookOpen className="w-4 h-4 text-stone-500" />
+              </div>
+
+              <h3 className="text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 mb-3">
+                Esai, Refleksi, dan Pengamatan Ruang.
+              </h3>
+
+              <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-sans leading-relaxed mb-6">
+                Ruang untuk menuangkan keresahan manusiawi, mengurai keraguan yang sering ditutupi, dan mencatat fragmen kecil interaksi sosial di kota. Murni teks tanpa tuntutan sensor atau tren visual.
+              </p>
+            </div>
+
+            <Link
+              to="/writing"
+              className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300 transition-colors border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 pt-4"
+            >
+              jelajahi katalog tulisan <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Kolom 2: Musik */}
+          <div className="p-6 sm:p-8 bg-[#EFE9DF]/50 dark:bg-[#1A1916]/50 border border-[#E2DAC8] dark:border-[#2D2B26] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between gap-4 mb-4 pb-2 border-b border-[#E2DAC8]/70 dark:border-[#2D2B26]/70">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+                  02 · Katalog Musik
+                </span>
+                <Music className="w-4 h-4 text-stone-500" />
+              </div>
+
+              <h3 className="text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 mb-3">
+                Akustik Mandiri, Gitar Nilon, dan Suara Kota.
+              </h3>
+
+              <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-sans leading-relaxed mb-6">
+                Nomor-nomor lagu yang direkam langsung larut malam di kamar tidur dengan mikrofon tunggal. Mempertahankan gesekan senar pada fret, tarikan napas, dan suara hujan apa adanya.
+              </p>
+            </div>
+
+            <Link
+              to="/music"
+              className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300 transition-colors border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 pt-4"
+            >
+              jelajahi katalog musik <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. RUANG KORESPONDENSI & SUREL (DIRECT LETTER DESK) */}
+      <section className="pt-8">
+        <div className="max-w-4xl mx-auto p-8 sm:p-12 bg-[#EFE9DF]/70 dark:bg-[#1A1916]/70 border border-[#E2DAC8] dark:border-[#2D2B26] text-center">
+          <p className="text-[10px] font-sans font-semibold tracking-[0.25em] uppercase text-stone-500 mb-2">
+            Meja Korespondensi
+          </p>
+
+          <h3 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100 mb-4">
+            Pintu surat selalu terbuka.
+          </h3>
+
+          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-sans leading-relaxed max-w-xl mx-auto mb-8">
+            Jika ada pemikiran yang bersinggungan, tanggapan atas esai, atau sekadar ingin bertukar salam di larut malam, silakan kirimkan surel langsung ke ruang kerja saya.
+          </p>
+
+          <div className="inline-flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="mailto:contact@sorside.com"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 hover:opacity-90 transition-opacity text-xs font-sans font-semibold tracking-wider uppercase"
+            >
+              <Mail className="w-4 h-4" />
+              <span>kirim surel: contact@sorside.com</span>
+            </a>
+          </div>
+
+          <p className="text-[11px] font-serif italic text-stone-500 dark:text-stone-400 mt-6">
+            &ldquo;Every side has a story.&rdquo; — Sor, sorside imprint
+          </p>
+        </div>
+      </section>
     </div>
   );
 };

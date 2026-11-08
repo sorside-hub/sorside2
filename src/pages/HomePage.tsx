@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Music, Folder, ArrowRight, Disc3, Volume2, Sparkles, BookOpen, Clock, Play } from 'lucide-react';
+import { ArrowRight, Disc3 } from 'lucide-react';
 import { ARTICLES, HERO_IMAGE, ABOUT_PORTRAIT_IMAGE } from '../content/articles';
 import { getVisibleReleases, TRACKS, getTracksForRelease } from '../content/music';
 import { AudioPlayer } from '../components/music/AudioPlayer';
@@ -29,11 +29,7 @@ export const HomePage: React.FC = () => {
           {/* Kicker & Meta */}
           <div className="flex items-center gap-3 mb-3 sm:mb-4">
             <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.22em] uppercase text-stone-600 dark:text-stone-400">
-              Featured Essay · Tulisan Pilihan
-            </span>
-            <span className="text-stone-400 dark:text-stone-600">·</span>
-            <span className="text-[11px] font-sans text-stone-500 dark:text-stone-400">
-              {featuredArticle.readTime}
+              Tulisan · Sorotan
             </span>
           </div>
 
@@ -53,16 +49,14 @@ export const HomePage: React.FC = () => {
           </p>
 
           {/* Byline Strip */}
-          <div className="flex items-center gap-4 text-xs font-sans text-stone-600 dark:text-stone-400 mb-6 pb-4 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
-            <span className="font-medium text-stone-900 dark:text-stone-200">Karya Sor</span>
-            <span>·</span>
+          <div className="flex items-center gap-3 text-xs font-sans text-stone-600 dark:text-stone-400 mb-6 pb-4 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
             <span>{featuredArticle.displayDate}</span>
             <span>·</span>
-            <span className="uppercase tracking-wider text-[10px] text-stone-500">{featuredArticle.category}</span>
+            <span className="tracking-wider text-stone-600 dark:text-stone-400">Refleksi</span>
           </div>
 
           {/* Cinematic Wide Imagery */}
-          <div className="relative overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 shadow-xs mb-3 group">
+          <div className="relative overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 shadow-xs mb-6 group">
             <Link to={`/writing/${featuredArticle.slug}`}>
               <img
                 src={HERO_IMAGE}
@@ -73,9 +67,6 @@ export const HomePage: React.FC = () => {
               />
             </Link>
           </div>
-          <p className="text-[11px] font-sans text-stone-500 dark:text-stone-400 italic mb-6">
-            Arsip visual: Sudut-sudut atap beton dan langit senja yang menunggu. Dokumentasi ruang & waktu sorside.
-          </p>
 
           {/* Excerpt Paragraph & Read More */}
           <div className="space-y-4 max-w-2xl">
@@ -85,9 +76,9 @@ export const HomePage: React.FC = () => {
             <div>
               <Link
                 to={`/writing/${featuredArticle.slug}`}
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300 transition-colors border-b-2 border-stone-900 dark:border-stone-100 pb-0.5"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm font-sans font-semibold tracking-wider text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300 transition-colors border-b-2 border-stone-900 dark:border-stone-100 pb-0.5"
               >
-                Baca Catatan Lengkap <ArrowRight className="w-3.5 h-3.5" />
+                baca lengkap <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
@@ -100,7 +91,7 @@ export const HomePage: React.FC = () => {
               <div className="flex items-center gap-2 text-stone-800 dark:text-stone-200">
                 <Disc3 className="w-4 h-4 text-stone-600 dark:text-stone-400 animate-spin-slow" />
                 <span className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase">
-                  Latest Music Release · Rilis Terbaru
+                  Musik · Terbaru
                 </span>
               </div>
               <span className="text-[10px] font-mono text-stone-500 uppercase tracking-wider">
@@ -142,7 +133,7 @@ export const HomePage: React.FC = () => {
             {/* Repertoire Tracklist Preview */}
             <div className="pt-3 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 mb-4">
               <p className="text-[10px] font-sans uppercase tracking-widest text-stone-500 mb-2">
-                Daftar Repertoar ({latestReleaseTracks.length} Trek)
+                Daftar Trek ({latestReleaseTracks.length})
               </p>
               <div className="space-y-1.5 text-xs font-sans">
                 {latestReleaseTracks.map((trk, i) => (
@@ -219,14 +210,9 @@ export const HomePage: React.FC = () => {
         <div className="lg:col-span-4 lg:pr-10 xl:pr-14 lg:border-r border-[#E2DAC8] dark:border-[#2D2B26] flex flex-col space-y-6">
           <div>
             <div className="flex items-center justify-between gap-4 mb-5 pb-2.5 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
-              <div>
-                <p className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-500">
-                  Arsip Terbaru
-                </p>
-                <h3 className="text-base font-serif font-bold text-stone-900 dark:text-stone-100">
-                  Writing & Essays
-                </h3>
-              </div>
+              <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-800 dark:text-stone-200">
+                Tulisan · Terbaru
+              </span>
               <Link
                 to="/writing"
                 className="text-xs font-serif italic text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100"
@@ -260,7 +246,7 @@ export const HomePage: React.FC = () => {
                     to={`/writing/${article.slug}`}
                     className="inline-flex items-center gap-1 text-[11px] font-sans font-medium text-stone-900 dark:text-stone-200 group-hover:text-stone-600 dark:group-hover:text-stone-400 mt-2 transition-colors"
                   >
-                    Baca esai <ArrowRight className="w-3 h-3" />
+                    baca <ArrowRight className="w-3 h-3" />
                   </Link>
                 </article>
               ))}
@@ -275,7 +261,7 @@ export const HomePage: React.FC = () => {
                 to="/writing"
                 className="text-xs font-sans font-semibold text-stone-900 dark:text-stone-100 hover:underline inline-flex items-center gap-1.5"
               >
-                Buka Seluruh Koleksi Arsip Tulisan <ArrowRight className="w-3 h-3" />
+                katalog tulisan <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
           </div>
@@ -286,11 +272,7 @@ export const HomePage: React.FC = () => {
           {/* Kicker & Meta */}
           <div className="flex items-center gap-3 mb-3 sm:mb-4">
             <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.22em] uppercase text-stone-600 dark:text-stone-400">
-              Featured Sound · Musik Pilihan
-            </span>
-            <span className="text-stone-400 dark:text-stone-600">·</span>
-            <span className="text-[11px] font-mono text-stone-500 dark:text-stone-400">
-              Acoustic Solo · {featuredTrack.duration}
+              Musik · Sorotan
             </span>
           </div>
 
@@ -365,7 +347,7 @@ export const HomePage: React.FC = () => {
 
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-2">
-                  Goresan Lirik
+                  sepenggal lirik
                 </p>
                 <p className="text-stone-600 dark:text-stone-400 leading-relaxed font-serif">
                   Kopi sudah mendingin di sudut meja,<br />
@@ -379,13 +361,13 @@ export const HomePage: React.FC = () => {
                 to={`/music/tracks/${featuredTrack.slug}`}
                 className="text-stone-900 dark:text-stone-100 font-semibold inline-flex items-center gap-1.5 hover:underline"
               >
-                Lihat Catatan Lengkap & Lirik <ArrowRight className="w-3.5 h-3.5" />
+                lihat lengkap <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <Link
                 to="/music"
                 className="text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 text-xs"
               >
-                Jelajahi Semua Trek Musik →
+                jelajahi katalog musik →
               </Link>
             </div>
           </div>
@@ -393,81 +375,38 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          SECTION 4: STUDIO DESK & ABOUT SOR (Kotak Intim)
+          SECTION 4: STUDIO DESK & ABOUT SORSIDE (Kotak Intim)
          ========================================================================= */}
       <section className="mt-16 sm:mt-24 pt-12 sm:pt-16 border-t border-[#E2DAC8] dark:border-[#2D2B26]">
-        <div className="max-w-5xl mx-auto bg-[#F0EAE0]/60 dark:bg-[#1A1916]/60 p-6 sm:p-10 border border-[#E2DAC8] dark:border-[#2D2B26]">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="max-w-4xl mx-auto bg-[#F0EAE0]/60 dark:bg-[#1A1916]/60 p-6 sm:p-10 border border-[#E2DAC8] dark:border-[#2D2B26]">
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-10 items-start">
             {/* Portrait & Manifesto */}
-            <div className="lg:col-span-8 flex flex-col sm:flex-row gap-6 sm:gap-8 items-start">
-              <div className="w-28 h-36 sm:w-36 sm:h-48 shrink-0 overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8] dark:border-[#2D2B26] shadow-xs">
-                <img
-                  src={ABOUT_PORTRAIT_IMAGE}
-                  alt="Portrait silhouette of author Sor looking over city"
-                  className="w-full h-full object-cover grayscale-[30%]"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              <div className="flex-1">
-                <p className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-500 dark:text-stone-400 mb-1.5">
-                  Tentang Pemilik Arsip
-                </p>
-                <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 mb-2">
-                  Sorside & Ruang Kreasi Sor.
-                </h3>
-                <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 font-sans leading-relaxed mb-3">
-                  Sorside bukan ruang bising yang menuntut algoritma. Ini adalah arsip personal dan publikasi kreatif tempat saya mencatat pengamatan kota, mengurai keraguan manusiawi, dan merekam petikan nada akustik yang lahir di sela-sela malam.
-                </p>
-                <Link
-                  to="/about"
-                  className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-stone-900 dark:text-stone-200 hover:text-stone-600 dark:hover:text-stone-400 transition-colors underline underline-offset-4"
-                >
-                  Membaca manifest & latar belakang Sor <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
+            <div className="w-28 h-36 sm:w-36 sm:h-48 shrink-0 overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8] dark:border-[#2D2B26] shadow-xs">
+              <img
+                src={ABOUT_PORTRAIT_IMAGE}
+                alt="Portrait silhouette of author Sor looking over city"
+                className="w-full h-full object-cover grayscale-[30%]"
+                loading="lazy"
+                referrerPolicy="no-referrer"
+              />
             </div>
 
-            {/* Quick Index Hub */}
-            <div className="lg:col-span-4 lg:pl-8 lg:border-l border-[#E2DAC8] dark:border-[#2D2B26] pt-6 lg:pt-0">
-              <h4 className="text-xs font-sans font-semibold uppercase tracking-[0.2em] text-stone-800 dark:text-stone-200 mb-3">
-                Jelajahi Arsip
-              </h4>
-              <div className="space-y-2 text-xs font-sans">
-                <Link
-                  to="/writing?category=reflection"
-                  className="flex items-center justify-between p-2.5 rounded bg-stone-100/70 dark:bg-stone-900/60 hover:bg-stone-200/60 dark:hover:bg-stone-800/60 transition-colors text-stone-800 dark:text-stone-200"
-                >
-                  <span className="flex items-center gap-2">
-                    <FileText className="w-3.5 h-3.5 text-stone-500" />
-                    Refleksi Personal
-                  </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-stone-400" />
-                </Link>
-
-                <Link
-                  to="/writing?category=essay"
-                  className="flex items-center justify-between p-2.5 rounded bg-stone-100/70 dark:bg-stone-900/60 hover:bg-stone-200/60 dark:hover:bg-stone-800/60 transition-colors text-stone-800 dark:text-stone-200"
-                >
-                  <span className="flex items-center gap-2">
-                    <BookOpen className="w-3.5 h-3.5 text-stone-500" />
-                    Esai Kota & Ruang
-                  </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-stone-400" />
-                </Link>
-
-                <Link
-                  to="/music"
-                  className="flex items-center justify-between p-2.5 rounded bg-stone-100/70 dark:bg-stone-900/60 hover:bg-stone-200/60 dark:hover:bg-stone-800/60 transition-colors text-stone-800 dark:text-stone-200"
-                >
-                  <span className="flex items-center gap-2">
-                    <Music className="w-3.5 h-3.5 text-stone-500" />
-                    Repertoar Akustik & Ambient
-                  </span>
-                  <ArrowRight className="w-3.5 h-3.5 text-stone-400" />
-                </Link>
-              </div>
+            <div className="flex-1">
+              <p className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-500 dark:text-stone-400 mb-1.5">
+                tentang sorside
+              </p>
+              <h3 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 mb-2">
+                Sorside & Ruang Kreasi Sor.
+              </h3>
+              <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 font-sans leading-relaxed mb-4">
+                Sorside bukan ruang bising yang menuntut algoritma. Ini adalah arsip personal dan publikasi kreatif tempat saya mencatat pengamatan kota, mengurai keraguan manusiawi, dan merekam petikan nada akustik yang lahir di sela-sela malam.
+              </p>
+              <Link
+                to="/about"
+                className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-stone-900 dark:text-stone-200 hover:text-stone-600 dark:hover:text-stone-400 transition-colors underline underline-offset-4"
+              >
+                baca lengkap <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
           </div>
         </div>

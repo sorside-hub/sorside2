@@ -1,12 +1,41 @@
-import React, { useMemo } from 'react';
-import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
+import React, { useMemo, useEffect } from 'react';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { marked } from 'marked';
 import { ARTICLES } from '../content/articles';
 
+const formatIndonesianDate = (dateStr: string, fallback: string): string => {
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return fallback;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  } catch {
+    return fallback;
+  }
+};
+
+const getCategoryLabel = (category: string): string => {
+  const normalized = category.toLowerCase().trim();
+  switch (normalized) {
+    case 'reflection':
+      return 'Refleksi';
+    case 'essay':
+      return 'Esai';
+    case 'opinion':
+      return 'Opini';
+    default:
+      return category;
+  }
+};
+
 export const ArticleDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const navigate = useNavigate();
+
+  // Always scroll to top when opening an article or navigating prev/next
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [slug]);
 
   const currentIndex = useMemo(() => {
     return ARTICLES.findIndex((a) => a.slug === slug);
@@ -21,127 +50,179 @@ export const ArticleDetailPage: React.FC = () => {
   const nextArticle =
     currentIndex < ARTICLES.length - 1 ? ARTICLES[currentIndex + 1] : null;
 
+  const categoryLabel = getCategoryLabel(article.category);
+  const dateLabel = formatIndonesianDate(article.date, article.displayDate);
+  const readTimeLabel = article.readTime?.replace(/min read/i, 'menit baca') || '';
+
   // Render markdown safely
   const parsedHtml = useMemo(() => {
     return marked.parse(article.content, { async: false }) as string;
   }, [article.content]);
 
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/writing');
-    }
-  };
-
   return (
-    <article className="max-w-3xl mx-auto px-6 sm:px-8 py-10 sm:py-16">
-      {/* Return to Writing */}
-      <div className="mb-8">
-        <button
-          type="button"
-          onClick={handleBack}
-          className="inline-flex items-center gap-2 text-xs font-sans tracking-wide uppercase text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100 transition-colors cursor-pointer"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          Back to Writing
-        </button>
+    <article className="w-full bg-[#F4EFEA] dark:bg-[#161513] transition-colors pb-16 sm:pb-24">
+      {/* 1. FULL-WIDTH TOP BREADCRUMB STRIP */}
+      <div className="w-full border-b border-[#E2DAC8] dark:border-[#2D2B26] bg-[#F4EFEA]/80 dark:bg-[#161513]/80 backdrop-blur-xs">
+        <div className="w-full px-6 lg:px-12 xl:px-16 h-12 flex items-center justify-between text-xs font-sans">
+          <Link
+            to="/writing"
+            className="inline-flex items-center gap-1.5 text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-50 transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>kembali ke katalog tulisan</span>
+          </Link>
+
+          <div className="hidden sm:flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400">
+            <span className="font-semibold text-stone-700 dark:text-stone-300">{categoryLabel}</span>
+            <span>·</span>
+            <span>Arsip {String(currentIndex + 1).padStart(2, '0')} / {String(ARTICLES.length).padStart(2, '0')}</span>
+          </div>
+        </div>
       </div>
 
-      {/* Article Header */}
-      <header className={article.coverImage ? 'mb-8 sm:mb-10' : 'mb-8 sm:mb-10'}>
-        <div className="text-xs font-sans tracking-[0.2em] uppercase text-stone-500 dark:text-stone-400 mb-3">
-          <span>{article.category}</span>
-          <span className="mx-2 text-stone-400 dark:text-stone-600">·</span>
-          <span>{article.displayDate}</span>
-          <span className="mx-2 text-stone-400 dark:text-stone-600">·</span>
-          <span>{article.readTime}</span>
+      {/* 2. ARTICLE HEADER (Centred Reading Measure) */}
+      <header className="max-w-3xl mx-auto px-6 sm:px-8 pt-10 sm:pt-16 pb-6 sm:pb-8">
+        <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3 sm:mb-4">
+          <span className="font-semibold text-stone-800 dark:text-stone-200">{categoryLabel}</span>
+          <span>·</span>
+          <span>{dateLabel}</span>
+          {readTimeLabel && (
+            <>
+              <span>·</span>
+              <span>{readTimeLabel}</span>
+            </>
+          )}
         </div>
 
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 dark:text-stone-50 leading-tight sm:leading-[1.15] text-balance">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 dark:text-stone-50 leading-[1.12] tracking-tight">
           {article.title}
         </h1>
 
         {article.excerpt && (
-          <p className="mt-4 text-base sm:text-lg text-stone-600 dark:text-stone-300 font-sans leading-relaxed italic">
-            {article.excerpt}
+          <p className="mt-5 sm:mt-6 text-base sm:text-lg lg:text-xl text-stone-700 dark:text-stone-300 font-serif italic leading-relaxed">
+            &ldquo;{article.excerpt}&rdquo;
           </p>
         )}
       </header>
 
-      {/* Featured Cover Image if available */}
-      {article.coverImage && (
-        <div className="mb-8 sm:mb-10 overflow-hidden bg-stone-200 dark:bg-stone-800">
-          <img
-            src={article.coverImage}
-            alt={article.coverAlt || article.title}
-            className="w-full max-h-[440px] object-cover grayscale-[10%]"
-            loading="eager"
-            referrerPolicy="no-referrer"
-          />
+      {/* 3. COVER IMAGE (FULL-WIDTH / EDGE-TO-EDGE jika ada) */}
+      {article.coverImage ? (
+        <div className="w-full my-6 sm:my-10 border-t border-b border-[#E2DAC8] dark:border-[#2D2B26] bg-stone-200 dark:bg-stone-800 overflow-hidden">
+          <div className="w-full h-[320px] sm:h-[440px] lg:h-[540px] xl:h-[600px] relative">
+            <img
+              src={article.coverImage}
+              alt={article.coverAlt || article.title}
+              className="w-full h-full object-cover grayscale-[12%]"
+              loading="eager"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          {article.coverAlt && (
+            <div className="w-full px-6 lg:px-12 xl:px-16 py-2.5 bg-[#EFE9DF]/80 dark:bg-[#181714]/80 border-t border-[#E2DAC8]/60 dark:border-[#2D2B26]/60 flex items-center justify-between text-[11px] font-sans text-stone-500 dark:text-stone-400">
+              <span className="italic">{article.coverAlt}</span>
+              <span className="font-mono text-[10px] uppercase">Dokumentasi Visual</span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="max-w-3xl mx-auto px-6 sm:px-8">
+          <div className="w-full border-t border-[#E2DAC8] dark:border-[#2D2B26] my-6 sm:my-8" />
         </div>
       )}
 
-      {/* Article Markdown Body */}
-      <div className="border-t border-[#E2DAC8] dark:border-[#2D2B26] pt-8 sm:pt-10">
+      {/* 4. ISI TULISAN PANJANG (Comfortable Reading Column) */}
+      <div className="max-w-2xl sm:max-w-3xl mx-auto px-6 sm:px-8 py-4 sm:py-6">
         <div
-          className="prose prose-stone dark:prose-invert max-w-none text-base sm:text-lg leading-[1.8] font-sans text-stone-800 dark:text-stone-200
+          className="prose prose-stone dark:prose-invert max-w-none text-base sm:text-lg leading-[1.88] font-sans text-stone-800 dark:text-stone-200
             [&>p]:mb-6
-            [&>p>img]:w-full [&>p>img]:my-8 [&>p>img]:object-cover [&>p>img]:grayscale-[10%]
-            [&>h3]:text-xl sm:[&>h3]:text-2xl [&>h3]:font-serif [&>h3]:font-bold [&>h3]:mt-10 [&>h3]:mb-4 [&>h3]:text-stone-900 dark:[&>h3]:text-stone-100
-            [&>blockquote]:my-8 [&>blockquote]:py-3 [&>blockquote]:px-6 [&>blockquote]:border-l-2 [&>blockquote]:border-stone-400 dark:[&>blockquote]:border-stone-600 [&>blockquote]:italic [&>blockquote]:font-serif [&>blockquote]:text-lg sm:[&>blockquote]:text-xl [&>blockquote]:text-stone-700 dark:[&>blockquote]:text-stone-300
+            [&>p]:text-stone-800 dark:[&>p]:text-stone-200
+            [&>p:first-of-type]:text-lg sm:[&>p:first-of-type]:text-xl [&>p:first-of-type]:leading-relaxed
+            [&>h3]:text-2xl sm:[&>h3]:text-3xl [&>h3]:font-serif [&>h3]:font-bold [&>h3]:mt-12 [&>h3]:mb-4 [&>h3]:text-stone-900 dark:[&>h3]:text-stone-100 [&>h3]:tracking-tight
+            [&>blockquote]:my-10 [&>blockquote]:py-4 [&>blockquote]:px-6 [&>blockquote]:border-l-2 [&>blockquote]:border-stone-900 dark:[&>blockquote]:border-stone-100 [&>blockquote]:italic [&>blockquote]:font-serif [&>blockquote]:text-xl sm:[&>blockquote]:text-2xl [&>blockquote]:text-stone-900 dark:[&>blockquote]:text-stone-100 [&>blockquote]:bg-[#EFE9DF]/40 dark:[&>blockquote]:bg-[#1A1916]/40
             [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-6
             [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-6"
           dangerouslySetInnerHTML={{ __html: parsedHtml }}
         />
       </div>
 
-      {/* Post-article Sign-off */}
-      <div className="mt-14 pt-8 border-t border-[#E2DAC8] dark:border-[#2D2B26] flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
-        <span>sorside archive</span>
-        <span className="font-serif italic text-stone-600 dark:text-stone-300">
-          Every side has a story.
-        </span>
+      {/* 5. FULL-WIDTH AUTHOR COLOPHON & IMPRINT NOTE */}
+      <div className="w-full border-t border-b border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/50 dark:bg-[#181714]/50 py-10 sm:py-14 my-14 sm:my-20">
+        <div className="w-full px-6 lg:px-12 xl:px-16">
+          <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-500 dark:text-stone-400">
+                kolofon tulisan · sorside
+              </p>
+              <h4 className="text-xl font-serif font-bold text-stone-900 dark:text-stone-100">
+                Ditulis dari sudut ruang mandiri.
+              </h4>
+              <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-sans max-w-lg leading-relaxed">
+                Tulisan ini dirangkai tanpa tuntutan algoritma atau viralitas. Arsip ini bebas dibaca dan direfleksikan kembali dalam ritme tenang.
+              </p>
+            </div>
+
+            <div className="pt-4 md:pt-0 md:pl-8 md:border-l border-[#E2DAC8] dark:border-[#2D2B26] shrink-0">
+              <span className="font-serif italic text-sm text-stone-700 dark:text-stone-300 block">
+                &ldquo;Every side has a story.&rdquo;
+              </span>
+              <span className="text-[10px] font-sans uppercase tracking-widest text-stone-500 mt-1 block">
+                — Sor, Catatan Studio
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Pagination: Prev / Next Articles */}
+      {/* 6. FULL-WIDTH SPLIT PREV / NEXT NAVIGATION */}
       <nav
-        aria-label="Article navigation"
-        className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26]"
+        aria-label="Navigasi tulisan"
+        className="w-full px-6 lg:px-12 xl:px-16"
       >
-        {prevArticle ? (
-          <Link
-            to={`/writing/${prevArticle.slug}`}
-            className="group p-4 border border-[#E2DAC8] dark:border-[#2D2B26] rounded hover:border-stone-400 dark:hover:border-stone-600 transition-colors flex flex-col justify-between"
-          >
-            <span className="text-[11px] font-sans tracking-widest uppercase text-stone-400 dark:text-stone-500 flex items-center gap-1.5 mb-2">
-              <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-              Previous
-            </span>
-            <span className="font-serif font-medium text-stone-900 dark:text-stone-100 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors line-clamp-2">
-              {prevArticle.title}
-            </span>
-          </Link>
-        ) : (
-          <div />
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 pt-4">
+          {prevArticle ? (
+            <Link
+              to={`/writing/${prevArticle.slug}`}
+              className="group p-6 sm:p-8 border border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/30 dark:bg-[#1A1916]/30 hover:bg-[#EFE9DF]/70 dark:hover:bg-[#1A1916]/70 transition-all flex flex-col justify-between"
+            >
+              <span className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5 mb-3 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">
+                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                tulisan sebelumnya
+              </span>
+              <h5 className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors leading-snug">
+                {prevArticle.title}
+              </h5>
+              <p className="mt-2 text-xs text-stone-500 dark:text-stone-400 font-sans line-clamp-2">
+                {prevArticle.excerpt}
+              </p>
+            </Link>
+          ) : (
+            <div className="hidden md:block border border-dashed border-[#E2DAC8]/60 dark:border-[#2D2B26]/60 p-6 sm:p-8 flex items-center justify-center text-xs text-stone-400 font-sans italic">
+              Awal dari arsip tulisan
+            </div>
+          )}
 
-        {nextArticle ? (
-          <Link
-            to={`/writing/${nextArticle.slug}`}
-            className="group p-4 border border-[#E2DAC8] dark:border-[#2D2B26] rounded hover:border-stone-400 dark:hover:border-stone-600 transition-colors flex flex-col justify-between text-right"
-          >
-            <span className="text-[11px] font-sans tracking-widest uppercase text-stone-400 dark:text-stone-500 flex items-center justify-end gap-1.5 mb-2">
-              Next
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-            </span>
-            <span className="font-serif font-medium text-stone-900 dark:text-stone-100 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors line-clamp-2">
-              {nextArticle.title}
-            </span>
-          </Link>
-        ) : (
-          <div />
-        )}
+          {nextArticle ? (
+            <Link
+              to={`/writing/${nextArticle.slug}`}
+              className="group p-6 sm:p-8 border border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/30 dark:bg-[#1A1916]/30 hover:bg-[#EFE9DF]/70 dark:hover:bg-[#1A1916]/70 transition-all flex flex-col justify-between text-left md:text-right"
+            >
+              <span className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase text-stone-500 dark:text-stone-400 inline-flex items-center gap-1.5 mb-3 md:self-end group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">
+                tulisan berikutnya
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <h5 className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors leading-snug">
+                {nextArticle.title}
+              </h5>
+              <p className="mt-2 text-xs text-stone-500 dark:text-stone-400 font-sans line-clamp-2">
+                {nextArticle.excerpt}
+              </p>
+            </Link>
+          ) : (
+            <div className="hidden md:block border border-dashed border-[#E2DAC8]/60 dark:border-[#2D2B26]/60 p-6 sm:p-8 flex items-center justify-center text-xs text-stone-400 font-sans italic text-right">
+              Akhir dari arsip tulisan
+            </div>
+          )}
+        </div>
       </nav>
     </article>
   );
