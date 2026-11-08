@@ -32,7 +32,7 @@ const getCategoryLabel = (category: string): string => {
 export const ArticleDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  // Always scroll to top when opening an article or navigating prev/next
+  // Selalu scroll ke bagian atas saat artikel baru dibuka atau saat klik prev/next
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [slug]);
@@ -61,7 +61,7 @@ export const ArticleDetailPage: React.FC = () => {
 
   return (
     <article className="w-full bg-[#F4EFEA] dark:bg-[#161513] transition-colors pb-16 sm:pb-24">
-      {/* 1. FULL-WIDTH TOP BREADCRUMB STRIP */}
+      {/* 1. STRIP NAVIGASI ATAS (FULL-WIDTH) */}
       <div className="w-full border-b border-[#E2DAC8] dark:border-[#2D2B26] bg-[#F4EFEA]/80 dark:bg-[#161513]/80 backdrop-blur-xs">
         <div className="w-full px-6 lg:px-12 xl:px-16 h-12 flex items-center justify-between text-xs font-sans">
           <Link
@@ -80,58 +80,87 @@ export const ArticleDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. ARTICLE HEADER (Centred Reading Measure) */}
-      <header className="max-w-3xl mx-auto px-6 sm:px-8 pt-10 sm:pt-16 pb-6 sm:pb-8">
-        <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3 sm:mb-4">
-          <span className="font-semibold text-stone-800 dark:text-stone-200">{categoryLabel}</span>
-          <span>·</span>
-          <span>{dateLabel}</span>
-          {readTimeLabel && (
-            <>
-              <span>·</span>
-              <span>{readTimeLabel}</span>
-            </>
-          )}
-        </div>
-
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 dark:text-stone-50 leading-[1.12] tracking-tight">
-          {article.title}
-        </h1>
-
-        {article.excerpt && (
-          <p className="mt-5 sm:mt-6 text-base sm:text-lg lg:text-xl text-stone-700 dark:text-stone-300 font-serif italic leading-relaxed">
-            &ldquo;{article.excerpt}&rdquo;
-          </p>
-        )}
-      </header>
-
-      {/* 3. COVER IMAGE (FULL-WIDTH / EDGE-TO-EDGE jika ada) */}
+      {/* 2. HEADER ARTIKEL: SPLIT 50:50 (KIRI JUDUL, KANAN GAMBAR) ATAU FOKUS TEKS JIKA TANPA GAMBAR */}
       {article.coverImage ? (
-        <div className="w-full my-6 sm:my-10 border-t border-b border-[#E2DAC8] dark:border-[#2D2B26] bg-stone-200 dark:bg-stone-800 overflow-hidden">
-          <div className="w-full h-[320px] sm:h-[440px] lg:h-[540px] xl:h-[600px] relative">
-            <img
-              src={article.coverImage}
-              alt={article.coverAlt || article.title}
-              className="w-full h-full object-cover grayscale-[12%]"
-              loading="eager"
-              referrerPolicy="no-referrer"
-            />
-          </div>
-          {article.coverAlt && (
-            <div className="w-full px-6 lg:px-12 xl:px-16 py-2.5 bg-[#EFE9DF]/80 dark:bg-[#181714]/80 border-t border-[#E2DAC8]/60 dark:border-[#2D2B26]/60 flex items-center justify-between text-[11px] font-sans text-stone-500 dark:text-stone-400">
-              <span className="italic">{article.coverAlt}</span>
-              <span className="font-mono text-[10px] uppercase">Dokumentasi Visual</span>
+        <header className="w-full border-b border-[#E2DAC8] dark:border-[#2D2B26] py-10 sm:py-14 lg:py-16">
+          <div className="w-full px-6 lg:px-12 xl:px-16">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+              {/* Kolom Kiri (50% / 6 cols): Judul & Rincian Esai */}
+              <div className="lg:col-span-6 flex flex-col justify-center">
+                <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3 sm:mb-4">
+                  <span className="font-semibold text-stone-800 dark:text-stone-200">{categoryLabel}</span>
+                  <span>·</span>
+                  <span>{dateLabel}</span>
+                  {readTimeLabel && (
+                    <>
+                      <span>·</span>
+                      <span>{readTimeLabel}</span>
+                    </>
+                  )}
+                </div>
+
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 dark:text-stone-50 leading-[1.14] tracking-tight">
+                  {article.title}
+                </h1>
+
+                {article.excerpt && (
+                  <p className="mt-4 sm:mt-5 text-base sm:text-lg lg:text-xl text-stone-700 dark:text-stone-300 font-serif italic leading-relaxed">
+                    &ldquo;{article.excerpt}&rdquo;
+                  </p>
+                )}
+              </div>
+
+              {/* Kolom Kanan (50% / 6 cols): Gambar Cover Proporsional */}
+              <div className="lg:col-span-6 flex flex-col">
+                <div className="w-full aspect-[4/3] sm:aspect-[16/10] max-h-[420px] overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8] dark:border-[#2D2B26] shadow-xs relative">
+                  <img
+                    src={article.coverImage}
+                    alt={article.coverAlt || article.title}
+                    className="w-full h-full object-cover grayscale-[10%]"
+                    loading="eager"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                {article.coverAlt && (
+                  <p className="mt-2 text-right text-[11px] font-sans text-stone-500 italic">
+                    {article.coverAlt}
+                  </p>
+                )}
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        </header>
       ) : (
-        <div className="max-w-3xl mx-auto px-6 sm:px-8">
-          <div className="w-full border-t border-[#E2DAC8] dark:border-[#2D2B26] my-6 sm:my-8" />
-        </div>
+        /* Header untuk Artikel Tanpa Gambar: Anggun, Terpusat, Tanpa Kolom Kosong */
+        <header className="w-full border-b border-[#E2DAC8] dark:border-[#2D2B26] py-10 sm:py-16">
+          <div className="max-w-3xl mx-auto px-6 sm:px-8">
+            <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3 sm:mb-4">
+              <span className="font-semibold text-stone-800 dark:text-stone-200">{categoryLabel}</span>
+              <span>·</span>
+              <span>{dateLabel}</span>
+              {readTimeLabel && (
+                <>
+                  <span>·</span>
+                  <span>{readTimeLabel}</span>
+                </>
+              )}
+            </div>
+
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 dark:text-stone-50 leading-[1.12] tracking-tight">
+              {article.title}
+            </h1>
+
+            {article.excerpt && (
+              <p className="mt-5 text-base sm:text-xl text-stone-700 dark:text-stone-300 font-serif italic leading-relaxed">
+                &ldquo;{article.excerpt}&rdquo;
+              </p>
+            )}
+          </div>
+        </header>
       )}
 
-      {/* 4. ISI TULISAN PANJANG (Comfortable Reading Column) */}
-      <div className="max-w-2xl sm:max-w-3xl mx-auto px-6 sm:px-8 py-4 sm:py-6">
+      {/* 3. ISI TULISAN PANJANG (KOLOM BACA TENANG) */}
+      <div className="max-w-2xl sm:max-w-3xl mx-auto px-6 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-8">
         <div
           className="prose prose-stone dark:prose-invert max-w-none text-base sm:text-lg leading-[1.88] font-sans text-stone-800 dark:text-stone-200
             [&>p]:mb-6
@@ -145,8 +174,8 @@ export const ArticleDetailPage: React.FC = () => {
         />
       </div>
 
-      {/* 5. FULL-WIDTH AUTHOR COLOPHON & IMPRINT NOTE */}
-      <div className="w-full border-t border-b border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/50 dark:bg-[#181714]/50 py-10 sm:py-14 my-14 sm:my-20">
+      {/* 4. KOLOFON PENUTUP TULISAN (PITA TENANG) */}
+      <div className="w-full border-t border-b border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/50 dark:bg-[#181714]/50 py-10 sm:py-14 my-12 sm:my-16">
         <div className="w-full px-6 lg:px-12 xl:px-16">
           <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="space-y-1.5">
@@ -173,12 +202,12 @@ export const ArticleDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 6. FULL-WIDTH SPLIT PREV / NEXT NAVIGATION */}
+      {/* 5. NAVIGASI PREV / NEXT (SEBELUMNYA & BERIKUTNYA) */}
       <nav
         aria-label="Navigasi tulisan"
         className="w-full px-6 lg:px-12 xl:px-16"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 pt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10 pt-2">
           {prevArticle ? (
             <Link
               to={`/writing/${prevArticle.slug}`}

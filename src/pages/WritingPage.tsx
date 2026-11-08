@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Search, X, ArrowRight } from 'lucide-react';
 import { ARTICLES } from '../content/articles';
+import { Article } from '../types';
 
 interface CategoryConfig {
   id: string;
@@ -38,6 +39,24 @@ const getCategoryLabel = (category: string): string => {
     default:
       return category;
   }
+};
+
+// Ambil cuplikan pembuka esai yang kaya dan substansial dari konten
+const getArticleRichPreview = (article: Article): string => {
+  const paragraphs = article.content
+    .split('\n\n')
+    .map((p) => p.trim())
+    .filter((p) => p && !p.startsWith('#') && !p.startsWith('>'));
+
+  if (paragraphs.length === 0) return article.excerpt;
+
+  let combined = paragraphs[0];
+  let i = 1;
+  while (combined.length < 180 && i < paragraphs.length) {
+    combined += ' ' + paragraphs[i];
+    i++;
+  }
+  return combined;
 };
 
 export const WritingPage: React.FC = () => {
@@ -119,7 +138,7 @@ export const WritingPage: React.FC = () => {
       </div>
 
       {/* Baris Filter Kategori & Pencarian (Indonesian Minimalist) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pb-6 mb-8 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 pb-6 mb-10 sm:mb-14 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
         {/* Category Filter Underline Tabs */}
         <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-sans">
           {CATEGORIES.map((cat) => {
@@ -168,38 +187,32 @@ export const WritingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Daftar Tulisan Pure Text (Broadsheet Catalogue Layout) */}
+      {/* Daftar Tulisan: Kiri Judul, Kanan Preview Isi Panjang (Jarak Antar Judul Lega) */}
       {filteredArticles.length > 0 ? (
         <div>
-          <div className="divide-y divide-[#E2DAC8]/70 dark:divide-[#2D2B26]/70">
+          <div className="divide-y divide-[#E2DAC8]/80 dark:divide-[#2D2B26]/80">
             {filteredArticles.map((article, index) => {
               const indexNumber = String(index + 1).padStart(2, '0');
               const categoryLabel = getCategoryLabel(article.category);
               const dateLabel = formatIndonesianDate(article.date, article.displayDate);
               const readTimeLabel = article.readTime?.replace(/min read/i, 'menit baca') || '';
+              const richPreview = getArticleRichPreview(article);
 
               return (
                 <article
                   key={article.slug}
-                  className="group py-7 sm:py-9 transition-colors hover:bg-stone-100/50 dark:hover:bg-stone-900/30 px-3 sm:px-5 -mx-3 sm:-mx-5"
+                  className="group py-10 sm:py-14 transition-colors hover:bg-stone-100/40 dark:hover:bg-stone-900/25 px-3 sm:px-6 -mx-3 sm:-mx-6"
                 >
                   <Link
                     to={`/writing/${article.slug}`}
                     className="block"
                   >
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-8 items-start">
-                      {/* Nomor Urut Katalog Monospace */}
-                      <div className="hidden lg:block lg:col-span-1 pt-1">
-                        <span className="font-mono text-xs text-stone-400 dark:text-stone-500 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">
-                          {indexNumber}.
-                        </span>
-                      </div>
-
-                      {/* Judul & Meta Informasi */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-start">
+                      {/* SISI KIRI (lg:col-span-5): Judul & Meta Informasi */}
                       <div className="lg:col-span-5">
-                        <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
-                          <span className="lg:hidden font-semibold text-stone-400">{indexNumber}.</span>
-                          <span className="font-semibold text-stone-700 dark:text-stone-300">{categoryLabel}</span>
+                        <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3">
+                          <span className="font-semibold text-stone-400 dark:text-stone-500">{indexNumber}.</span>
+                          <span className="font-semibold text-stone-800 dark:text-stone-200">{categoryLabel}</span>
                           <span>·</span>
                           <span>{dateLabel}</span>
                           {readTimeLabel && (
@@ -210,23 +223,25 @@ export const WritingPage: React.FC = () => {
                           )}
                         </div>
 
-                        <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors leading-snug">
+                        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100 group-hover:text-stone-600 dark:group-hover:text-stone-300 transition-colors leading-[1.22] tracking-tight">
                           {article.title}
                         </h2>
                       </div>
 
-                      {/* Cuplikan Esai (Excerpt) */}
-                      <div className="lg:col-span-5 pt-0.5">
-                        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-sans leading-relaxed line-clamp-3">
-                          {article.excerpt}
+                      {/* SISI KANAN (lg:col-span-7): Preview Isi Panjang & Dalam + Tautan Aksi */}
+                      <div className="lg:col-span-7 flex flex-col justify-between pt-0.5">
+                        <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 font-sans leading-[1.88] line-clamp-4 sm:line-clamp-5">
+                          {richPreview}
                         </p>
-                      </div>
 
-                      {/* Tautan Aksi */}
-                      <div className="lg:col-span-1 flex lg:justify-end items-center pt-1">
-                        <span className="inline-flex items-center gap-1 text-xs font-sans font-medium text-stone-900 dark:text-stone-200 group-hover:translate-x-1 transition-transform">
-                          baca <ArrowRight className="w-3.5 h-3.5" />
-                        </span>
+                        <div className="mt-5 pt-3.5 border-t border-[#E2DAC8]/60 dark:border-[#2D2B26]/60 flex items-center justify-between">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-stone-900 dark:text-stone-100 group-hover:underline">
+                            baca lengkap <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          </span>
+                          <span className="text-[11px] font-mono text-stone-400">
+                            {article.readTime}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </Link>
@@ -236,7 +251,7 @@ export const WritingPage: React.FC = () => {
           </div>
 
           {/* Info Status Arsip */}
-          <div className="mt-10 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-sans text-stone-500 dark:text-stone-400">
+          <div className="mt-12 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-sans text-stone-500 dark:text-stone-400">
             <span>Menampilkan {filteredArticles.length} tulisan dari arsip sorside</span>
             <span className="font-serif italic text-stone-600 dark:text-stone-400">
               &ldquo;Setiap tulisan adalah dokumentasi ruang & waktu.&rdquo;
