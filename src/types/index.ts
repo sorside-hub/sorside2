@@ -5,10 +5,13 @@ export interface Article {
   title: string;
   category: 'REFLECTION' | 'OPINION' | 'ESSAY' | string;
   date: string;
-  displayDate: string;
+  displayDate?: string;
   excerpt: string;
-  readTime: string;
+  readTime?: string;
   coverImage?: string;
   coverAlt?: string;
   content: string;
+  status?: 'published' | 'draft';
+  featured?: boolean;
+  relatedTrackSlug?: string;
 }

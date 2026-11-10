@@ -8,6 +8,12 @@ import cityPoleImg from '../assets/images/article_city_pole_1794072646227.jpg';
 export const HERO_IMAGE = heroArchitectureImg;
 export const ABOUT_PORTRAIT_IMAGE = aboutPortraitImg;
 
+export const calculateReadTime = (content: string): string => {
+  const words = content.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.ceil(words / 180));
+  return `${minutes} menit baca`;
+};
+
 export const ARTICLES: Article[] = [
   {
     slug: 'tentang-hal-hal-yang-terus-kita-tunda',
@@ -19,6 +25,9 @@ export const ARTICLES: Article[] = [
     excerpt: 'Sebuah catatan tentang mengetahui apa yang harus dilakukan, tetapi tetap tidak melakukannya.',
     coverImage: delayedCupImg,
     coverAlt: 'Secangkir kopi di meja kayu dengan berkas sinar matahari pagi',
+    status: 'published',
+    featured: true,
+    relatedTrackSlug: 'langkah-yang-tertinggal',
     content: `
 Ada jarak yang aneh antara mengetahui apa yang harus dilakukan dan benar-benar melangkah untuk melakukannya.
 
@@ -49,6 +58,8 @@ Namun ada kelegaan yang luar biasa begitu kita melepaskan tuntutan untuk langsun
     excerpt: 'Tentang privilese, perjuangan, dan orang-orang yang membantu kita tumbuh.',
     coverImage: minatoSunsetImg,
     coverAlt: 'Siluet gedung pencakar langit kota saat senja',
+    status: 'published',
+    featured: false,
     content: `
 Dalam narasi populer tentang keberhasilan, kita kerap tergoda untuk memuja sosok yang tampak mampu menyelesaikan segalanya sendirian. Kita menyukai cerita tentang pahlawan yang muncul dari ketiadaan, bergerak dengan kecepatan kilat, dan menaklukkan segala rintangan tanpa cela.
 
@@ -79,6 +90,9 @@ Menjadi sosok yang diandalkan menuntut kita untuk tidak hanya memikirkan pencapa
     excerpt: 'Sebuah esai pendek tentang kota, ruang, dan manusia di dalamnya.',
     coverImage: cityPoleImg,
     coverAlt: 'Tiang listrik kayu dengan kabel kusut di sudut kota berkabut',
+    status: 'published',
+    featured: false,
+    relatedTrackSlug: 'kota-dan-lampu-jalan',
     content: `
 Kota tidak pernah benar-benar tidur, tetapi ia memiliki saat-saat ketika ia melambat dan membiarkan kita bernapas.
 
@@ -105,6 +119,8 @@ Kadang kita mengeluhkan debu, macet, dan dinginnya interaksi sosial di kota besa
     displayDate: 'OCT 14, 2026',
     readTime: '4 min read',
     excerpt: 'Bagaimana keheningan rumah di malam hari melahirkan kembali dialog-dialog yang sempat terputus.',
+    status: 'published',
+    featured: false,
     content: `
 Ketika semua lampu luar sudah dipadamkan dan hanya tersisa lampu meja di sudut ruang tengah, rumah mengambil wujudnya yang paling intim.
 
@@ -121,6 +137,9 @@ Keheningan bukan ketiadaan suara, melainkan kehadiran ruang di mana pikiran kita
     displayDate: 'SEP 29, 2026',
     readTime: '5 min read',
     excerpt: 'Mungkin kepastian adalah ilusi yang paling melelahkan untuk terus dipertahankan.',
+    status: 'published',
+    featured: false,
+    relatedTrackSlug: 'skenario-dua-puluh-lima',
     content: `
 Masyarakat kita memberi penghargaan tinggi pada orang-orang yang tampak seratus persen yakin akan setiap langkahnya. Kita diajarkan bahwa ragu adalah tanda kelemahan, bahwa bimbang berarti kita belum cukup matang.
 
@@ -130,3 +149,17 @@ Menerima keraguan bukan berarti menyerah pada kepasifan. Ia adalah keberanian un
     `.trim(),
   },
 ];
+
+export const getVisibleArticles = (): Article[] => {
+  return ARTICLES.filter((a) => a.status !== 'draft');
+};
+
+export const getFeaturedArticle = (): Article => {
+  const visible = getVisibleArticles();
+  const featured = visible.find((a) => a.featured);
+  return featured || visible[0] || ARTICLES[0];
+};
+
+export const getArticleBySlug = (slug: string): Article | undefined => {
+  return ARTICLES.find((a) => a.slug === slug);
+};

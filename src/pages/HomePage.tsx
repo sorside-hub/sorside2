@@ -1,13 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Disc3 } from 'lucide-react';
-import { ARTICLES, ABOUT_PORTRAIT_IMAGE } from '../content/articles';
+import {
+  calculateReadTime,
+  ABOUT_PORTRAIT_IMAGE,
+} from '../content/articles';
+import { useArticles } from '../context/ArticlesContext';
 import { getVisibleReleases, TRACKS, getTracksForRelease } from '../content/music';
 import { AudioPlayer } from '../components/music/AudioPlayer';
 
+const formatIndonesianDate = (dateStr: string, fallback?: string): string => {
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return fallback || dateStr;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  } catch {
+    return fallback || dateStr;
+  }
+};
+
 export const HomePage: React.FC = () => {
-  const featuredArticle = ARTICLES[0]; // Writing Pilihan: "Tentang hal-hal yang terus kita tunda"
-  const latestArticles = ARTICLES.slice(1, 4); // Writing Terbaru: "Menjadi Minato", "Kita, dan Kota Ini", "Catatan dari Ruang Tengah"
+  const { articles: visibleArticles, featuredArticle } = useArticles();
+  const latestArticles = visibleArticles
+    .filter((a) => a.slug !== featuredArticle.slug)
+    .slice(0, 3);
   const releases = getVisibleReleases();
   
   // Latest Release (EP "Sudut dan Bayangan")
@@ -54,7 +71,7 @@ export const HomePage: React.FC = () => {
 
           {/* Byline Strip */}
           <div className="flex items-center gap-3 text-xs font-sans text-stone-600 dark:text-stone-400 mb-8 pb-4 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
-            <span>{featuredArticle.displayDate}</span>
+            <span>{formatIndonesianDate(featuredArticle.date, featuredArticle.displayDate)}</span>
             <span>·</span>
             <span>Refleksi & Esai</span>
             <span>·</span>
@@ -252,7 +269,7 @@ export const HomePage: React.FC = () => {
                     <span className="font-semibold text-stone-700 dark:text-stone-300">0{idx + 1}.</span>
                     <span className="uppercase tracking-wider">{article.category}</span>
                     <span>·</span>
-                    <span>{article.readTime}</span>
+                    <span>{article.readTime?.replace(/min read/i, 'menit baca') || calculateReadTime(article.content)}</span>
                   </div>
 
                   <Link to={`/writing/${article.slug}`}>

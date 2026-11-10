@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, X, ArrowRight } from 'lucide-react';
-import { ARTICLES } from '../content/articles';
+import { calculateReadTime } from '../content/articles';
+import { useArticles } from '../context/ArticlesContext';
 import { Article } from '../types';
 
 const CATEGORIES = [
@@ -128,9 +129,10 @@ export const WritingPage: React.FC = () => {
 
   const searchQuery = searchParams.get('q') || '';
   const isSearching = searchQuery.trim().length > 0;
+  const { articles: visibleArticles } = useArticles();
 
   const filteredArticles = useMemo(() => {
-    return ARTICLES.filter((article) => {
+    return visibleArticles.filter((article) => {
       const matchesCategory =
         selectedCategoryId === 'all' ||
         article.category.toLowerCase() === selectedCategoryId;
@@ -144,7 +146,7 @@ export const WritingPage: React.FC = () => {
 
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategoryId, searchQuery]);
+  }, [visibleArticles, selectedCategoryId, searchQuery]);
 
   const handleCategoryChange = (catId: string) => {
     const nextParams = new URLSearchParams(searchParams);
@@ -202,8 +204,8 @@ export const WritingPage: React.FC = () => {
             const isActive = selectedCategoryId === cat.id;
             const count =
               cat.id === 'all'
-                ? ARTICLES.length
-                : ARTICLES.filter((a) => a.category.toLowerCase() === cat.id).length;
+                ? visibleArticles.length
+                : visibleArticles.filter((a) => a.category.toLowerCase() === cat.id).length;
 
             return (
               <button
@@ -273,8 +275,8 @@ export const WritingPage: React.FC = () => {
             {filteredArticles.map((article, index) => {
               const indexNumber = String(index + 1).padStart(2, '0');
               const categoryLabel = getCategoryLabel(article.category);
-              const dateLabel = formatIndonesianDate(article.date, article.displayDate);
-              const readTimeLabel = article.readTime?.replace(/min read/i, 'menit baca') || '';
+              const dateLabel = formatIndonesianDate(article.date, article.displayDate || article.date);
+              const readTimeLabel = article.readTime?.replace(/min read/i, 'menit baca') || calculateReadTime(article.content);
               const { text: previewText, isSnippet } = getArticleSearchSnippet(article, searchQuery);
 
               return (

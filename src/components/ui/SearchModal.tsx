@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, ArrowRight, BookOpen, Disc3 } from 'lucide-react';
-import { ARTICLES } from '../../content/articles';
+import { useArticles } from '../../context/ArticlesContext';
 import { RELEASES, TRACKS } from '../../content/music';
 
 interface SearchModalProps {
@@ -13,6 +13,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { articles } = useArticles();
 
   useEffect(() => {
     if (isOpen) {
@@ -49,7 +50,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
 
   // 1. Filter Tulisan
   const filteredArticles = q
-    ? ARTICLES.filter((article) => {
+    ? articles.filter((article) => {
         return (
           article.title.toLowerCase().includes(q) ||
           article.excerpt.toLowerCase().includes(q) ||

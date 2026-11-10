@@ -1,8 +1,10 @@
 import React, { useMemo, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Disc3 } from 'lucide-react';
 import { marked } from 'marked';
-import { ARTICLES } from '../content/articles';
+import { calculateReadTime } from '../content/articles';
+import { useArticles } from '../context/ArticlesContext';
+import { getTrackBySlug, getReleaseById } from '../content/music';
 
 const formatIndonesianDate = (dateStr: string, fallback: string): string => {
   try {
@@ -31,6 +33,7 @@ const getCategoryLabel = (category: string): string => {
 
 export const ArticleDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { articles } = useArticles();
 
   // Selalu scroll ke bagian atas saat artikel baru dibuka atau saat klik prev/next
   useEffect(() => {
@@ -38,21 +41,24 @@ export const ArticleDetailPage: React.FC = () => {
   }, [slug]);
 
   const currentIndex = useMemo(() => {
-    return ARTICLES.findIndex((a) => a.slug === slug);
-  }, [slug]);
+    return articles.findIndex((a) => a.slug === slug);
+  }, [articles, slug]);
 
   if (currentIndex === -1) {
     return <Navigate to="/writing" replace />;
   }
 
-  const article = ARTICLES[currentIndex];
-  const prevArticle = currentIndex > 0 ? ARTICLES[currentIndex - 1] : null;
+  const article = articles[currentIndex];
+  const prevArticle = currentIndex > 0 ? articles[currentIndex - 1] : null;
   const nextArticle =
-    currentIndex < ARTICLES.length - 1 ? ARTICLES[currentIndex + 1] : null;
+    currentIndex < articles.length - 1 ? articles[currentIndex + 1] : null;
 
   const categoryLabel = getCategoryLabel(article.category);
-  const dateLabel = formatIndonesianDate(article.date, article.displayDate);
-  const readTimeLabel = article.readTime?.replace(/min read/i, 'menit baca') || '';
+  const dateLabel = formatIndonesianDate(article.date, article.displayDate || article.date);
+  const readTimeLabel = article.readTime?.replace(/min read/i, 'menit baca') || calculateReadTime(article.content);
+
+  const relatedTrack = article.relatedTrackSlug ? getTrackBySlug(article.relatedTrackSlug) : undefined;
+  const relatedRelease = relatedTrack ? getReleaseById(relatedTrack.releaseId) : undefined;
 
   // Render markdown safely
   const parsedHtml = useMemo(() => {
@@ -75,7 +81,7 @@ export const ArticleDetailPage: React.FC = () => {
           <div className="hidden sm:flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400">
             <span className="font-semibold text-stone-700 dark:text-stone-300">{categoryLabel}</span>
             <span>·</span>
-            <span>Arsip {String(currentIndex + 1).padStart(2, '0')} / {String(ARTICLES.length).padStart(2, '0')}</span>
+            <span>Arsip {String(currentIndex + 1).padStart(2, '0')} / {String(articles.length).padStart(2, '0')}</span>
           </div>
         </div>
       </div>
@@ -174,7 +180,48 @@ export const ArticleDetailPage: React.FC = () => {
         />
       </div>
 
-      {/* 4. KOLOFON PENUTUP TULISAN (PITA TENANG) */}
+      {/* 4. TAUTAN NADA / LAGU TERKAIT (JIKA ADA RELASI DENGAN MUSIK) */}
+      {relatedTrack && (
+        <section
+          aria-label="Nada Beririsan"
+          className="max-w-2xl sm:max-w-3xl mx-auto px-6 sm:px-8 mt-6 mb-10"
+        >
+          <div className="p-5 sm:p-6 border border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/60 dark:bg-[#1A1916]/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 transition-colors">
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="w-12 h-12 shrink-0 bg-stone-900 text-stone-100 flex items-center justify-center border border-[#E2DAC8] dark:border-[#2D2B26] shadow-2xs">
+                <Disc3 className="w-6 h-6 animate-spin-slow text-amber-200/90" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-0.5">
+                  <span className="font-semibold text-stone-700 dark:text-stone-300">nada beririsan</span>
+                  <span>·</span>
+                  <span>{relatedRelease?.title || 'Katalog Musik'}</span>
+                </div>
+                <h4 className="text-base sm:text-lg font-serif font-bold text-stone-900 dark:text-stone-100 truncate">
+                  {relatedTrack.title}
+                </h4>
+                <p className="text-xs text-stone-600 dark:text-stone-400 font-sans line-clamp-1 mt-0.5">
+                  {relatedTrack.description || 'Dengarkan nada dan petikan yang menemani tulisan ini.'}
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to={
+                relatedRelease?.releaseType === 'single'
+                  ? `/music/releases/${relatedRelease.slug}`
+                  : `/music/tracks/${relatedTrack.slug}`
+              }
+              className="shrink-0 w-full sm:w-auto px-4 py-2 border border-stone-800 dark:border-stone-200 bg-stone-900 text-stone-50 dark:bg-stone-100 dark:text-stone-900 text-xs font-sans font-semibold tracking-wider uppercase transition-opacity hover:opacity-85 inline-flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <span>dengarkan nada</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* 5. KOLOFON PENUTUP TULISAN (PITA TENANG) */}
       <div className="w-full border-t border-b border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/50 dark:bg-[#181714]/50 py-10 sm:py-14 my-12 sm:my-16">
         <div className="w-full px-6 lg:px-12 xl:px-16">
           <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
