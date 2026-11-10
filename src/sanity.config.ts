@@ -79,10 +79,31 @@ export default defineConfig({
           },
           {
             name: 'content',
-            title: 'Isi Naskah Tulisan (Markdown)',
-            type: 'text',
-            rows: 15,
-            description: 'Tulis naskah lengkapmu di sini (mendukung Markdown, sub-judul ###, dan kutipan >)',
+            title: 'Isi Naskah Tulisan (Rich Text / Notion Style)',
+            type: 'array',
+            of: [
+              {
+                type: 'block',
+                styles: [
+                  { title: 'Normal', value: 'normal' },
+                  { title: 'Sub-Judul (H3)', value: 'h3' },
+                  { title: 'Kutipan (Quote)', value: 'blockquote' },
+                ],
+                lists: [
+                  { title: 'Bullet', value: 'bullet' },
+                  { title: 'Numbered', value: 'number' },
+                ],
+                marks: {
+                  decorators: [
+                    { title: 'Bold', value: 'strong' },
+                    { title: 'Italic', value: 'em' },
+                    { title: 'Code', value: 'code' },
+                    { title: 'Underline', value: 'underline' },
+                  ],
+                },
+              },
+            ],
+            description: 'Tulis naskah lengkapmu di sini ala Notion (bisa diblok untuk ditebalkan, dimiringkan, atau dijadikan kutipan)',
           },
           {
             name: 'featured',

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, ArrowRight, BookOpen, Disc3 } from 'lucide-react';
+import { getArticlePlainText } from '../../content/articles';
 import { useArticles } from '../../context/ArticlesContext';
 import { RELEASES, TRACKS } from '../../content/music';
 
@@ -51,11 +52,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   // 1. Filter Tulisan
   const filteredArticles = q
     ? articles.filter((article) => {
+        const plainText = getArticlePlainText(article.content);
         return (
           article.title.toLowerCase().includes(q) ||
           article.excerpt.toLowerCase().includes(q) ||
           article.category.toLowerCase().includes(q) ||
-          article.content.toLowerCase().includes(q)
+          plainText.toLowerCase().includes(q)
         );
       })
     : [];

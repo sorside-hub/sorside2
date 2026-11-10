@@ -1,10 +1,10 @@
 import React, { useMemo, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Disc3 } from 'lucide-react';
-import { marked } from 'marked';
 import { calculateReadTime } from '../content/articles';
 import { useArticles } from '../context/ArticlesContext';
 import { getTrackBySlug, getReleaseById } from '../content/music';
+import { ArticleBodyRenderer } from '../components/ui/ArticleBodyRenderer';
 
 const formatIndonesianDate = (dateStr: string, fallback: string): string => {
   try {
@@ -59,11 +59,6 @@ export const ArticleDetailPage: React.FC = () => {
 
   const relatedTrack = article.relatedTrackSlug ? getTrackBySlug(article.relatedTrackSlug) : undefined;
   const relatedRelease = relatedTrack ? getReleaseById(relatedTrack.releaseId) : undefined;
-
-  // Render markdown safely
-  const parsedHtml = useMemo(() => {
-    return marked.parse(article.content, { async: false }) as string;
-  }, [article.content]);
 
   return (
     <article className="w-full bg-[#F4EFEA] dark:bg-[#161513] transition-colors pb-16 sm:pb-24">
@@ -167,17 +162,7 @@ export const ArticleDetailPage: React.FC = () => {
 
       {/* 3. ISI TULISAN PANJANG (KOLOM BACA TENANG) */}
       <div className="max-w-2xl sm:max-w-3xl mx-auto px-6 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-8">
-        <div
-          className="prose prose-stone dark:prose-invert max-w-none text-base sm:text-lg leading-[1.88] font-sans text-stone-800 dark:text-stone-200
-            [&>p]:mb-6
-            [&>p]:text-stone-800 dark:[&>p]:text-stone-200
-            [&>p:first-of-type]:text-lg sm:[&>p:first-of-type]:text-xl [&>p:first-of-type]:leading-relaxed
-            [&>h3]:text-2xl sm:[&>h3]:text-3xl [&>h3]:font-serif [&>h3]:font-bold [&>h3]:mt-12 [&>h3]:mb-4 [&>h3]:text-stone-900 dark:[&>h3]:text-stone-100 [&>h3]:tracking-tight
-            [&>blockquote]:my-10 [&>blockquote]:py-4 [&>blockquote]:px-6 [&>blockquote]:border-l-2 [&>blockquote]:border-stone-900 dark:[&>blockquote]:border-stone-100 [&>blockquote]:italic [&>blockquote]:font-serif [&>blockquote]:text-xl sm:[&>blockquote]:text-2xl [&>blockquote]:text-stone-900 dark:[&>blockquote]:text-stone-100 [&>blockquote]:bg-[#EFE9DF]/40 dark:[&>blockquote]:bg-[#1A1916]/40
-            [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-6
-            [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-6"
-          dangerouslySetInnerHTML={{ __html: parsedHtml }}
-        />
+        <ArticleBodyRenderer content={article.content} />
       </div>
 
       {/* 4. TAUTAN NADA / LAGU TERKAIT (JIKA ADA RELASI DENGAN MUSIK) */}

@@ -10,7 +10,8 @@ export interface Article {
   readTime?: string;
   coverImage?: string;
   coverAlt?: string;
-  content: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  content: string | any;
   status?: 'published' | 'draft';
   featured?: boolean;
   relatedTrackSlug?: string;

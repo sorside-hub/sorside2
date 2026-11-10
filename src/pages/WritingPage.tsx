@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, X, ArrowRight } from 'lucide-react';
-import { calculateReadTime } from '../content/articles';
+import { calculateReadTime, getArticlePlainText } from '../content/articles';
 import { useArticles } from '../context/ArticlesContext';
 import { Article } from '../types';
 
@@ -39,7 +39,8 @@ const getCategoryLabel = (category: string): string => {
 
 // Ambil cuplikan pembuka esai yang kaya dan substansial dari konten
 const getArticleRichPreview = (article: Article): string => {
-  const paragraphs = article.content
+  const plainContent = getArticlePlainText(article.content);
+  const paragraphs = plainContent
     .split('\n\n')
     .map((p) => p.trim())
     .filter((p) => p && !p.startsWith('#') && !p.startsWith('>'));
@@ -69,7 +70,8 @@ const getArticleSearchSnippet = (article: Article, query: string): { text: strin
   }
 
   // Jika kata kunci ditemukan lebih dalam di isi tulisan (content body)
-  const cleanContent = article.content
+  const plainContent = getArticlePlainText(article.content);
+  const cleanContent = plainContent
     .replace(/[#*`_>]/g, ' ')
     .replace(/\s+/g, ' ');
 

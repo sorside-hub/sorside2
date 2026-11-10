@@ -8,8 +8,28 @@ import cityPoleImg from '../assets/images/article_city_pole_1794072646227.jpg';
 export const HERO_IMAGE = heroArchitectureImg;
 export const ABOUT_PORTRAIT_IMAGE = aboutPortraitImg;
 
-export const calculateReadTime = (content: string): string => {
-  const words = content.trim().split(/\s+/).filter(Boolean).length;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getArticlePlainText = (content: string | any): string => {
+  if (!content) return '';
+  if (typeof content === 'string') return content;
+  if (Array.isArray(content)) {
+    return content
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((block: any) => {
+        if (block._type !== 'block' || !block.children) return '';
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return block.children.map((child: any) => child.text).join('');
+      })
+      .filter(Boolean)
+      .join('\n\n');
+  }
+  return '';
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const calculateReadTime = (content: string | any): string => {
+  const text = getArticlePlainText(content);
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
   const minutes = Math.max(1, Math.ceil(words / 180));
   return `${minutes} menit baca`;
 };

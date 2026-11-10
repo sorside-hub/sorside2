@@ -6,6 +6,7 @@
       "name": "react-example",
       "dependencies": {
         "@google/genai": "^2.4.0",
+        "@portabletext/react": "^8.0.1",
         "@sanity/client": "^8.15.1",
         "@sanity/image-url": "^2.1.1",
         "@sanity/structure": "^2.36.2",
