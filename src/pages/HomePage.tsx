@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Disc3 } from 'lucide-react';
 import {
   calculateReadTime,
+  getArticlePlainText,
   ABOUT_PORTRAIT_IMAGE,
 } from '../content/articles';
 import { useArticles } from '../context/ArticlesContext';
@@ -17,6 +18,20 @@ const formatIndonesianDate = (dateStr: string, fallback?: string): string => {
     return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   } catch {
     return fallback || dateStr;
+  }
+};
+
+const getCategoryLabel = (category: string): string => {
+  const normalized = (category || '').toLowerCase().trim();
+  switch (normalized) {
+    case 'reflection':
+      return 'Refleksi';
+    case 'essay':
+      return 'Esai';
+    case 'opinion':
+      return 'Opini';
+    default:
+      return category || 'Refleksi';
   }
 };
 
@@ -35,6 +50,24 @@ export const HomePage: React.FC = () => {
   const featuredTrack = TRACKS[0];
   const featuredRelease = releases.find((r) => r.id === featuredTrack.releaseId) || releases[0];
 
+  // Ekstraksi paragraf dinamis untuk preview broadsheet tulisan sorotan
+  const featuredPlainText = getArticlePlainText(featuredArticle.content);
+  const featuredParagraphs = featuredPlainText
+    .split('\n\n')
+    .map((p) => p.trim())
+    .filter((p) => p && !p.startsWith('#') && !p.startsWith('>'));
+
+  const firstParagraph = featuredParagraphs[0] || featuredArticle.excerpt || '';
+  const secondParagraph = featuredParagraphs.length > 2 ? featuredParagraphs[1] : '';
+  const lastParagraph = featuredParagraphs.length > 1
+    ? featuredParagraphs[featuredParagraphs.length - 1]
+    : featuredArticle.excerpt || firstParagraph;
+
+  const dropCapChar = firstParagraph.charAt(0) || 'A';
+  const remainingFirstParagraph = firstParagraph.slice(1);
+  const categoryLabel = getCategoryLabel(featuredArticle.category);
+  const readTimeText = featuredArticle.readTime?.replace(/min read/i, 'menit baca') || calculateReadTime(featuredArticle.content);
+
   return (
     <div className="w-full px-6 lg:px-12 xl:px-16 py-8 sm:py-12 lg:py-14">
       {/* =========================================================================
@@ -48,10 +81,6 @@ export const HomePage: React.FC = () => {
             <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.22em] uppercase text-stone-600 dark:text-stone-400">
               Tulisan · Sorotan
             </span>
-            <span className="text-stone-400 dark:text-stone-600 text-xs">/</span>
-            <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">
-              Esai Pilihan · 12 Menit Baca
-            </span>
           </div>
 
           {/* Lead Headline */}
@@ -64,42 +93,46 @@ export const HomePage: React.FC = () => {
             </h1>
           </Link>
 
-          {/* Standfirst / Dek */}
-          <p className="text-lg sm:text-xl lg:text-2xl font-serif italic text-stone-700 dark:text-stone-300 leading-relaxed mb-6 max-w-3xl">
-            &ldquo;{featuredArticle.excerpt}&rdquo;
-          </p>
+          {/* Standfirst / Dek (Ringkasan Pengantar Utama) */}
+          {featuredArticle.excerpt && (
+            <p className="text-lg sm:text-xl lg:text-2xl font-serif italic text-stone-700 dark:text-stone-300 leading-relaxed mb-6 max-w-3xl">
+              &ldquo;{featuredArticle.excerpt}&rdquo;
+            </p>
+          )}
 
-          {/* Byline Strip */}
-          <div className="flex items-center gap-3 text-xs font-sans text-stone-600 dark:text-stone-400 mb-8 pb-4 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
+          {/* Byline Strip (Seragam & 100% Presisi dengan Halaman Tulisan & Detail) */}
+          <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-8 pb-4 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
+            <span className="font-semibold text-stone-800 dark:text-stone-200">{categoryLabel}</span>
+            <span>·</span>
             <span>{formatIndonesianDate(featuredArticle.date, featuredArticle.displayDate)}</span>
             <span>·</span>
-            <span>Refleksi & Esai</span>
-            <span>·</span>
-            <span className="text-stone-500 font-mono">Arsip #01</span>
+            <span>{readTimeText}</span>
           </div>
 
-          {/* Pure Literary Broadsheet Body (NO IMAGE: Teks Murni Berbobot) */}
+          {/* Pure Literary Broadsheet Body (NO IMAGE: Teks Murni Berbobot & Dinamis) */}
           <div className="bg-[#EFE9DF]/40 dark:bg-[#1A1916]/40 p-6 sm:p-8 border border-[#E2DAC8] dark:border-[#2D2B26] mb-6 shadow-2xs">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-start">
               {/* Kolom Pembuka Esai (7 cols) */}
               <div className="md:col-span-7 space-y-4">
                 <p className="text-sm sm:text-base text-stone-800 dark:text-stone-200 font-sans leading-[1.85]">
-                  <span className="text-4xl sm:text-5xl font-serif font-bold float-left mr-3 mt-1 leading-none text-stone-900 dark:text-stone-100">A</span>
-                  da jarak yang aneh antara mengetahui apa yang harus dilakukan dan benar-benar melangkah untuk melakukannya. Sebagian besar dari kita tidak terhenti karena ketidaktahuan, melainkan karena di balik setiap tindakan ada kemungkinan gagal atau tuntutan untuk menghadapi realitas yang belum tentu ramah.
+                  <span className="text-4xl sm:text-5xl font-serif font-bold float-left mr-3 mt-1 leading-none text-stone-900 dark:text-stone-100">{dropCapChar}</span>
+                  {remainingFirstParagraph}
                 </p>
-                <p className="text-sm sm:text-base text-stone-700 dark:text-stone-300 font-sans leading-[1.85]">
-                  Di sela hari-hari yang tampak sibuk, kita terus menumpuk draf setengah jadi, rekaman suara mentah, dan rencana-rencana yang kita klaim hanya butuh &ldquo;sedikit waktu senggang lagi&rdquo; sebelum akhirnya benar-benar dimulai...
-                </p>
+                {secondParagraph && (
+                  <p className="text-sm sm:text-base text-stone-700 dark:text-stone-300 font-sans leading-[1.85] line-clamp-3">
+                    {secondParagraph}
+                  </p>
+                )}
               </div>
 
-              {/* Kolom Kutipan Kunci / Pull-Quote (5 cols) */}
+              {/* Kolom Kutipan Kunci / Paragraf Penutup (5 cols - Tanpa Tanda Kutip & Dibatasi Maksimal 5 Baris) */}
               <div className="md:col-span-5 md:pl-6 md:border-l border-[#E2DAC8] dark:border-[#2D2B26] flex flex-col justify-between h-full pt-4 md:pt-0">
-                <blockquote className="font-serif italic text-base sm:text-lg text-stone-900 dark:text-stone-100 leading-snug">
-                  &ldquo;Menunda sering kali bukan soal kemalasan, melainkan ketakutan diam-diam bahwa apa yang kita hasilkan tidak akan seindah apa yang ada di kepala.&rdquo;
-                </blockquote>
+                <p className="font-serif italic text-base sm:text-lg text-stone-900 dark:text-stone-100 leading-snug line-clamp-5">
+                  {lastParagraph}
+                </p>
                 <div className="mt-4 pt-3 border-t border-[#E2DAC8]/60 dark:border-[#2D2B26]/60">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block">
-                    — Catatan Sor, Sudut Meja Kerja
+                    — sor
                   </span>
                 </div>
               </div>
@@ -112,7 +145,7 @@ export const HomePage: React.FC = () => {
               to={`/writing/${featuredArticle.slug}`}
               className="inline-flex items-center gap-2 text-xs sm:text-sm font-sans font-semibold tracking-wider text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300 transition-colors border-b-2 border-stone-900 dark:border-stone-100 pb-0.5"
             >
-              baca esai lengkap <ArrowRight className="w-3.5 h-3.5" />
+              baca lengkap <ArrowRight className="w-3.5 h-3.5" />
             </Link>
 
             <Link
@@ -208,18 +241,9 @@ export const HomePage: React.FC = () => {
               </Link>
             </div>
           </div>
-
-          {/* Quick Studio Note */}
-          <div className="p-4 bg-stone-100/60 dark:bg-stone-900/40 border border-[#E2DAC8]/60 dark:border-[#2D2B26]/60 max-w-md w-full">
-            <p className="text-xs font-serif italic text-stone-700 dark:text-stone-300 leading-relaxed">
-              &ldquo;Musik di sorside bukan tentang kesempurnaan teknis, melainkan tentang menangkap tarikan napas dan kejujuran bunyi di larut malam.&rdquo;
-            </p>
-            <p className="text-[10px] font-sans uppercase tracking-widest text-stone-500 mt-2">
-              — Sor, Catatan Studio
-            </p>
-          </div>
         </div>
       </section>
+
 
       {/* =========================================================================
           JEDA NAPAS: 1 KALIMAT KONTEMPLATIF
