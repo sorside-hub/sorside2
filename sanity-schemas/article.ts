@@ -1,6 +1,6 @@
 /**
  * Skema Sanity Studio untuk Koleksi "Tulisan / Esai" sorside.
- * Anda dapat menyalin file ini ke direktori skema proyek Sanity Studio Anda.
+ * Menggunakan type: 'markdown' yang 100% kompatibel dengan TipTap, ChatGPT, dan Obsidian.
  */
 export const articleSchema = {
   name: 'article',
@@ -68,36 +68,12 @@ export const articleSchema = {
       name: 'coverAlt',
       title: 'Deskripsi Gambar Sampul (Alt Text)',
       type: 'string',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      hidden: ({ document }: any) => !document?.coverImage,
     },
     {
       name: 'content',
-      title: 'Isi Naskah Tulisan (Rich Text / Notion Style)',
-      type: 'array',
-      of: [
-        {
-          type: 'block',
-          styles: [
-            { title: 'Normal', value: 'normal' },
-            { title: 'Sub-Judul (H3)', value: 'h3' },
-            { title: 'Kutipan (Quote)', value: 'blockquote' },
-          ],
-          lists: [
-            { title: 'Bullet', value: 'bullet' },
-            { title: 'Numbered', value: 'number' },
-          ],
-          marks: {
-            decorators: [
-              { title: 'Bold', value: 'strong' },
-              { title: 'Italic', value: 'em' },
-              { title: 'Code', value: 'code' },
-              { title: 'Underline', value: 'underline' },
-            ],
-          },
-        },
-      ],
-      description: 'Tulis naskah lengkapmu di sini ala Notion (bisa diblok untuk ditebalkan, dimiringkan, atau dijadikan kutipan)',
+      title: 'Isi Naskah Tulisan (Markdown / TipTap / ChatGPT Compatible)',
+      type: 'markdown',
+      description: 'Tulis atau paste langsung naskah tulisanmu di sini dari TipTap atau ChatGPT. Mendukung sintaks Markdown, **bold**, *italic*, ### sub-judul, dan > kutipan.',
     },
     {
       name: 'featured',

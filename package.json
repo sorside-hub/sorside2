@@ -27,6 +27,7 @@
     "react-dom": "^19.0.1",
     "react-router-dom": "^7.18.5",
     "sanity": "^6.22.0",
+    "sanity-plugin-markdown": "^9.0.18",
     "vite": "^8.3.0"
   },
   "devDependencies": {

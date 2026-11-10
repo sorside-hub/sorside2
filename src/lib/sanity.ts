@@ -125,3 +125,32 @@ export const fetchArticlesFromSanity = async (): Promise<Article[] | null> => {
     return null;
   }
 };
+
+/**
+ * Langganan perubahan data Sanity secara Real-time (Live Updates).
+ * Mengaktifkan sinkronisasi instan tanpa perlu refresh halaman.
+ */
+export const subscribeToArticlesFromSanity = (
+  onArticlesUpdate: (articles: Article[]) => void
+) => {
+  if (!sanityClient) return () => {};
+
+  const query = `*[_type == "article"]`;
+
+  try {
+    const subscription = sanityClient.listen(query).subscribe(async () => {
+      const updatedArticles = await fetchArticlesFromSanity();
+      if (updatedArticles && updatedArticles.length > 0) {
+        onArticlesUpdate(updatedArticles);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  } catch (err) {
+    console.warn('[Sanity Live Sync] Gagal mengaktifkan live subscription:', err);
+    return () => {};
+  }
+};
+

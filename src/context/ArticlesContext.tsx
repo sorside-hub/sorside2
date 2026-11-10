@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Article } from '../types';
 import { getVisibleArticles, getFeaturedArticle } from '../content/articles';
-import { isSanityConfigured, fetchArticlesFromSanity } from '../lib/sanity';
+import { isSanityConfigured, fetchArticlesFromSanity, subscribeToArticlesFromSanity } from '../lib/sanity';
 
 interface ArticlesContextType {
   articles: Article[];
@@ -45,6 +45,18 @@ export const ArticlesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   useEffect(() => {
     loadArticles();
+
+    // Aktifkan Real-Time Live Sync dari Sanity Studio
+    const unsubscribe = subscribeToArticlesFromSanity((updatedArticles) => {
+      if (updatedArticles && updatedArticles.length > 0) {
+        setArticles(updatedArticles);
+        setIsUsingSanity(true);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const featuredArticle =
