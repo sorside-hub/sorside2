@@ -63,3 +63,67 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted);
 }
+
+/* =========================================================================
+   SANITY STUDIO MOBILE ENHANCEMENTS
+   Memastikan tombol Publish & Status Bar selalu mengambang & terlihat jelas di HP
+   ========================================================================= */
+@media (max-width: 768px) {
+  /* Pastikan container pane footer selalu melayang di bawah layar mobile dan tidak terpotong */
+  [data-testid="pane-footer"] {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    z-index: 99999 !important;
+    background: #191816 !important;
+    border-top: 1px solid #3d3a34 !important;
+    padding: 8px 12px max(12px, env(safe-area-inset-bottom)) 12px !important;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.75) !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Berikan padding bawah pada panel form dokumen agar field terakhir tidak tertutup footer */
+  [data-testid="document-panel-scroller"],
+  [data-testid="pane-content"],
+  div[data-portal-id="document-panel-portal"],
+  form[data-testid="document-form"] {
+    padding-bottom: 120px !important;
+  }
+
+  /* Tonjolkan tombol Publish di mobile: besar, jelas, mudah ditekan jempol */
+  [data-testid="pane-footer"] button[data-testid="action-publish"],
+  [data-testid="pane-footer"] button[data-testid^="action-"] {
+    min-height: 42px !important;
+    min-width: 90px !important;
+    padding: 8px 18px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    background-color: #15803d !important; /* Hijau Publish tegas */
+    color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(21, 128, 61, 0.45) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  [data-testid="pane-footer"] button[data-testid="action-publish"]:disabled,
+  [data-testid="pane-footer"] button[data-testid^="action-"]:disabled {
+    background-color: #3f3f46 !important;
+    color: #a1a1aa !important;
+    box-shadow: none !important;
+    opacity: 0.65 !important;
+  }
+
+  /* Rapikan tata letak baris tombol aksi di mobile agar tidak terlipat atau terjepit */
+  [data-testid="pane-footer"] > div {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+}
