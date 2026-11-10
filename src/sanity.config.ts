@@ -108,31 +108,21 @@ export default defineConfig({
             name: 'relatedTrackSlug',
             title: 'Lagu Terkait (Opsional)',
             type: 'string',
-            description: 'Pilih karya nada/lagu sorside yang beririsan rasa dengan esai ini',
-            options: {
-              list: [
-                { title: 'Skenario Dua Puluh Lima (Single)', value: 'skenario-dua-puluh-lima' },
-                { title: 'Langkah yang Tertinggal (Sudut dan Bayangan EP)', value: 'langkah-yang-tertinggal' },
-                { title: 'Kota dan Lampu Jalan (Sudut dan Bayangan EP)', value: 'kota-dan-lampu-jalan' },
-                { title: 'Hujan di Balik Jendela (Single)', value: 'hujan-di-balik-jendela' },
-                { title: 'Dialog Tanpa Kata (Sudut dan Bayangan EP)', value: 'dialog-tanpa-kata' },
-                { title: 'Menembus Kabut Pagi (Sudut dan Bayangan EP)', value: 'menembus-kabut-pagi' },
-              ],
-            },
+            description: 'Tulis slug karya nada/lagu sorside yang beririsan rasa dengan esai ini (cth: "skenario-dua-puluh-lima", "langkah-yang-tertinggal")',
           },
         ],
       },
       {
-        name: 'release',
-        title: 'Rilisan Musik (Single / EP / Album)',
+        name: 'single',
+        title: 'Single (Lagu Tunggal)',
         type: 'document',
         fields: [
           {
             name: 'title',
-            title: 'Judul Rilisan',
+            title: 'Judul Single / Lagu',
             type: 'string',
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            validation: (Rule: any) => Rule.required().error('Judul rilisan wajib diisi'),
+            validation: (Rule: any) => Rule.required().error('Judul single wajib diisi'),
           },
           {
             name: 'slug',
@@ -142,22 +132,6 @@ export default defineConfig({
               source: 'title',
               maxLength: 96,
             },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            validation: (Rule: any) => Rule.required(),
-          },
-          {
-            name: 'releaseType',
-            title: 'Format Rilisan',
-            type: 'string',
-            options: {
-              list: [
-                { title: 'Single', value: 'single' },
-                { title: 'EP (Mini Album)', value: 'ep' },
-                { title: 'Album Penuh', value: 'album' },
-              ],
-              layout: 'radio',
-            },
-            initialValue: 'single',
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             validation: (Rule: any) => Rule.required(),
           },
@@ -193,11 +167,165 @@ export default defineConfig({
             initialValue: 'released',
           },
           {
+            name: 'coverArt',
+            title: 'Sampul Musik (Cover Art)',
+            type: 'image',
+            options: {
+              hotspot: true,
+            },
+          },
+          {
+            name: 'coverArtAlt',
+            title: 'Alt Text Sampul',
+            type: 'string',
+          },
+          {
+            name: 'audioFile',
+            title: 'File Audio Master Lagu (MP3 / WAV)',
+            type: 'file',
+            options: {
+              accept: 'audio/*',
+            },
+            description: 'Unggah file MP3 untuk lagu single ini. File ini yang akan langsung diputar di audio player web.',
+          },
+          {
+            name: 'duration',
+            title: 'Durasi Lagu (cth: 03:45)',
+            type: 'string',
+            initialValue: '03:30',
+          },
+          {
+            name: 'lyrics',
+            title: 'Naskah Lirik Resmi (Markdown)',
+            type: 'markdown',
+            description: 'Tulis atau tempel naskah lirik lagu ini. Pisahkan bait dengan baris kosong. Mendukung tag [Bait 1], [Refrain], [Outro].',
+          },
+          {
             name: 'description',
-            title: 'Deskripsi / Sinopsis Rilisan',
+            title: 'Deskripsi Singkat / Sinopsis Lagu',
             type: 'text',
             rows: 3,
-            description: 'Penjelasan singkat tentang nuansa, cerita, dan konsep rilisan ini.',
+            description: 'Penjelasan 1-2 paragraf mengenai esensi dan nuansa single ini.',
+          },
+          {
+            name: 'behindTheSong',
+            title: 'Di Balik Lagu (Catatan Studio & Personal)',
+            type: 'text',
+            rows: 6,
+            description: 'Cerita bagaimana melodi tercipta di sudut kamar rekam.',
+          },
+          {
+            name: 'spotifyUrl',
+            title: 'Tautan Spotify',
+            type: 'url',
+            description: 'Link lagu ini di Spotify (cth: https://open.spotify.com/track/...)',
+          },
+          {
+            name: 'youtubeUrl',
+            title: 'Tautan YouTube / YouTube Music',
+            type: 'url',
+            description: 'Link lagu / video musik ini di YouTube (cth: https://www.youtube.com/watch?v=...)',
+          },
+          {
+            name: 'appleMusicUrl',
+            title: 'Tautan Apple Music (Opsional)',
+            type: 'url',
+          },
+          {
+            name: 'bandcampUrl',
+            title: 'Tautan Bandcamp / Lainnya (Opsional)',
+            type: 'url',
+          },
+          {
+            name: 'credits',
+            title: 'Kredit Personel & Produksi',
+            type: 'array',
+            of: [
+              {
+                type: 'object',
+                fields: [
+                  { name: 'role', title: 'Peran (cth: Vokal & Gitar Akustik, Tata Suara, Mastering)', type: 'string' },
+                  { name: 'name', title: 'Nama Personel / Lokasi', type: 'string' },
+                ],
+              },
+            ],
+          },
+          {
+            name: 'featured',
+            title: 'Jadikan Sorotan Utama Beranda',
+            type: 'boolean',
+            initialValue: false,
+          },
+        ],
+      },
+      {
+        name: 'album',
+        title: 'EP & Album (Koleksi Lagu)',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            title: 'Judul EP / Album',
+            type: 'string',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            validation: (Rule: any) => Rule.required().error('Judul EP/Album wajib diisi'),
+          },
+          {
+            name: 'slug',
+            title: 'Slug (Link URL)',
+            type: 'slug',
+            options: {
+              source: 'title',
+              maxLength: 96,
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            validation: (Rule: any) => Rule.required(),
+          },
+          {
+            name: 'releaseType',
+            title: 'Format Rilisan',
+            type: 'string',
+            options: {
+              list: [
+                { title: 'EP (Mini Album)', value: 'ep' },
+                { title: 'Album Penuh (Full Album)', value: 'album' },
+              ],
+              layout: 'radio',
+            },
+            initialValue: 'ep',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            validation: (Rule: any) => Rule.required(),
+          },
+          {
+            name: 'releaseDate',
+            title: 'Tanggal Rilis',
+            type: 'date',
+            options: {
+              dateFormat: 'YYYY-MM-DD',
+            },
+            initialValue: () => new Date().toISOString().split('T')[0],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            validation: (Rule: any) => Rule.required(),
+          },
+          {
+            name: 'displayYear',
+            title: 'Tahun Rilis (Label)',
+            type: 'string',
+            initialValue: () => new Date().getFullYear().toString(),
+          },
+          {
+            name: 'status',
+            title: 'Status Publikasi',
+            type: 'string',
+            options: {
+              list: [
+                { title: 'Rilis (Tampil di Publik)', value: 'released' },
+                { title: 'Segera Datang (Upcoming)', value: 'upcoming' },
+                { title: 'Draf (Sembunyikan)', value: 'draft' },
+              ],
+              layout: 'radio',
+            },
+            initialValue: 'released',
           },
           {
             name: 'coverArt',
@@ -213,44 +341,45 @@ export default defineConfig({
             type: 'string',
           },
           {
-            name: 'audioFile',
-            title: 'File Audio Master (MP3 / WAV / M4A)',
-            type: 'file',
-            options: {
-              accept: 'audio/*',
-            },
-            description: 'Unggah file audio master untuk pemutar lagu (terutama bila berformat Single). Format MP3 direkomendasikan untuk pemutaran web cepat.',
+            name: 'description',
+            title: 'Sinopsis / Deskripsi Album',
+            type: 'text',
+            rows: 3,
+            description: 'Pengantar tema dan konsep keseluruhan rilisan ini.',
           },
           {
             name: 'behindTheRelease',
-            title: 'Di Balik Rilisan (Catatan Studio & Proses Kreatif)',
+            title: 'Di Balik Rilisan (Catatan Studio & Konsep Album)',
             type: 'text',
             rows: 6,
-            description: 'Cerita mendalam tentang bagaimana karya ini tercipta di sudut kamar rekam.',
+            description: 'Cerita mendalam tentang bagaimana rangkaian lagu dalam album ini dirajut bersama.',
           },
           {
-            name: 'streamingLinks',
-            title: 'Tautan Layanan Streaming Musik',
-            type: 'array',
-            of: [
-              {
-                type: 'object',
-                fields: [
-                  { name: 'platform', title: 'Nama Platform (cth: Spotify, YouTube, Apple Music, Bandcamp)', type: 'string' },
-                  { name: 'url', title: 'Tautan URL', type: 'url' },
-                ],
-              },
-            ],
+            name: 'spotifyUrl',
+            title: 'Tautan Album di Spotify',
+            type: 'url',
+            description: 'Link album/EP ini di Spotify',
+          },
+          {
+            name: 'youtubeUrl',
+            title: 'Tautan Album di YouTube / Playlist',
+            type: 'url',
+            description: 'Link playlist album ini di YouTube Music atau YouTube',
+          },
+          {
+            name: 'appleMusicUrl',
+            title: 'Tautan Album di Apple Music (Opsional)',
+            type: 'url',
           },
           {
             name: 'credits',
-            title: 'Kredit & Personel Produksi',
+            title: 'Kredit & Personel Album',
             type: 'array',
             of: [
               {
                 type: 'object',
                 fields: [
-                  { name: 'role', title: 'Peran (cth: Vokal & Gitar Akustik, Tata Suara, Lokasi)', type: 'string' },
+                  { name: 'role', title: 'Peran', type: 'string' },
                   { name: 'name', title: 'Nama Personel / Lokasi', type: 'string' },
                 ],
               },
@@ -258,124 +387,104 @@ export default defineConfig({
           },
           {
             name: 'featured',
-            title: 'Jadikan Koleksi Unggulan Beranda & Katalog',
+            title: 'Jadikan Koleksi Unggulan Beranda',
             type: 'boolean',
             initialValue: false,
           },
-        ],
-      },
-      {
-        name: 'track',
-        title: 'Trek Lagu (Untuk EP / Album)',
-        type: 'document',
-        fields: [
           {
-            name: 'title',
-            title: 'Judul Lagu',
-            type: 'string',
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            validation: (Rule: any) => Rule.required().error('Judul trek lagu wajib diisi'),
-          },
-          {
-            name: 'slug',
-            title: 'Slug (Link URL)',
-            type: 'slug',
-            options: {
-              source: 'title',
-              maxLength: 96,
-            },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            validation: (Rule: any) => Rule.required(),
-          },
-          {
-            name: 'releaseId',
-            title: 'Slug atau ID Rilisan Induk (EP / Album)',
-            type: 'string',
-            description: 'Isi dengan slug rilis induk, misalnya "sudut-dan-bayangan" atau "gema-ruang-sunyi"',
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            validation: (Rule: any) => Rule.required(),
-          },
-          {
-            name: 'trackNumber',
-            title: 'Nomor Urutan Trek',
-            type: 'number',
-            initialValue: 1,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            validation: (Rule: any) => Rule.required().min(1),
-          },
-          {
-            name: 'duration',
-            title: 'Durasi Lagu (cth: 03:42)',
-            type: 'string',
-            initialValue: '03:30',
-          },
-          {
-            name: 'audioFile',
-            title: 'File Audio Master Lagu (MP3 / WAV)',
-            type: 'file',
-            options: {
-              accept: 'audio/*',
-            },
-            description: 'Unggah file audio MP3 untuk diputar langsung di audio player situs web sorside.',
-          },
-          {
-            name: 'description',
-            title: 'Deskripsi Singkat',
-            type: 'text',
-            rows: 2,
-          },
-          {
-            name: 'lyrics',
-            title: 'Naskah Lirik Resmi (Markdown)',
-            type: 'markdown',
-            description: 'Tulis atau tempel lirik lagu. Pisahkan bait dengan satu baris kosong. Kamu bisa menambahkan [Bait 1], [Refrain], atau [Outro] di baris pertama tiap bait.',
-          },
-          {
-            name: 'behindTheSong',
-            title: 'Di Balik Lagu (Catatan Personal & Makna)',
-            type: 'text',
-            rows: 5,
-          },
-          {
-            name: 'credits',
-            title: 'Kredit Personel Lagu Ini',
+            name: 'tracks',
+            title: 'Daftar Lagu (Tracks)',
+            description: 'Tambahkan lagu-lagu dalam EP / Album ini secara berurutan. File audio dan lirik diatur di masing-masing lagu di bawah ini.',
             type: 'array',
             of: [
               {
                 type: 'object',
+                name: 'albumTrack',
+                title: 'Lagu',
                 fields: [
-                  { name: 'role', title: 'Peran', type: 'string' },
-                  { name: 'name', title: 'Nama Personel', type: 'string' },
+                  {
+                    name: 'trackNumber',
+                    title: 'Nomor Trek (Urutan)',
+                    type: 'number',
+                    initialValue: 1,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    validation: (Rule: any) => Rule.required().min(1),
+                  },
+                  {
+                    name: 'title',
+                    title: 'Judul Lagu',
+                    type: 'string',
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    validation: (Rule: any) => Rule.required().error('Judul lagu wajib diisi'),
+                  },
+                  {
+                    name: 'slug',
+                    title: 'Slug Lagu (URL unik)',
+                    type: 'string',
+                    description: 'Tulis slug huruf kecil tanpa spasi (cth: langkah-yang-tertinggal)',
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    validation: (Rule: any) => Rule.required(),
+                  },
+                  {
+                    name: 'duration',
+                    title: 'Durasi Lagu (cth: 03:42)',
+                    type: 'string',
+                    initialValue: '03:30',
+                  },
+                  {
+                    name: 'audioFile',
+                    title: 'File Audio Master Lagu Ini (MP3 / WAV)',
+                    type: 'file',
+                    options: {
+                      accept: 'audio/*',
+                    },
+                    description: 'Unggah file audio MP3 khusus lagu ini.',
+                  },
+                  {
+                    name: 'lyrics',
+                    title: 'Naskah Lirik Resmi (Markdown)',
+                    type: 'markdown',
+                    description: 'Tulis atau tempel lirik. Pisahkan bait dengan satu baris kosong.',
+                  },
+                  {
+                    name: 'description',
+                    title: 'Deskripsi Singkat',
+                    type: 'text',
+                    rows: 2,
+                  },
+                  {
+                    name: 'behindTheSong',
+                    title: 'Di Balik Lagu (Catatan Personal)',
+                    type: 'text',
+                    rows: 4,
+                  },
+                  {
+                    name: 'spotifyUrl',
+                    title: 'Tautan Spotify Lagu Ini (Opsional)',
+                    type: 'url',
+                  },
+                  {
+                    name: 'youtubeUrl',
+                    title: 'Tautan YouTube Lagu Ini (Opsional)',
+                    type: 'url',
+                  },
+                  {
+                    name: 'credits',
+                    title: 'Kredit Personel Khusus Lagu Ini (Opsional)',
+                    type: 'array',
+                    of: [
+                      {
+                        type: 'object',
+                        fields: [
+                          { name: 'role', title: 'Peran', type: 'string' },
+                          { name: 'name', title: 'Nama Personel', type: 'string' },
+                        ],
+                      },
+                    ],
+                  },
                 ],
               },
             ],
-          },
-          {
-            name: 'streamingLinks',
-            title: 'Tautan Streaming Lagu Ini',
-            type: 'array',
-            of: [
-              {
-                type: 'object',
-                fields: [
-                  { name: 'platform', title: 'Platform', type: 'string' },
-                  { name: 'url', title: 'Tautan URL', type: 'url' },
-                ],
-              },
-            ],
-          },
-          {
-            name: 'status',
-            title: 'Status Publikasi',
-            type: 'string',
-            options: {
-              list: [
-                { title: 'Terbit (Published)', value: 'released' },
-                { title: 'Draf (Draft)', value: 'draft' },
-              ],
-              layout: 'radio',
-            },
-            initialValue: 'released',
           },
         ],
       },

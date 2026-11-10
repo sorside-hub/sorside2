@@ -253,23 +253,15 @@ export const ReleaseDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Pemutar Audio Langsung */}
-              {(leadTrack?.audioUrl || release.audioUrl || isSingle) && (
+              {/* Pemutar Audio Langsung: HANYA untuk Single (Di EP/Album audio hanya ada di trek masing-masing) */}
+              {isSingle && (
                 <div className="mt-8 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26]">
                   <div className="flex items-center justify-between mb-2.5">
                     <p className="text-[10px] font-sans font-semibold uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                      {isSingle ? 'Putar Lagu Ini' : `Lagu Pembuka · 01. ${leadTrack?.title || release.title}`}
+                      Putar Lagu Ini
                     </p>
-                    {!isSingle && leadTrack && (
-                      <Link
-                        to={`/music/tracks/${leadTrack.slug}`}
-                        className="text-[11px] font-sans text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 underline"
-                      >
-                        buka lirik lagu ini →
-                      </Link>
-                    )}
                   </div>
-                  <AudioPlayer src={leadTrack?.audioUrl || release.audioUrl} title={leadTrack?.title || release.title} />
+                  <AudioPlayer src={leadTrack?.audioUrl || release.audioUrl} title={release.title} />
                 </div>
               )}
             </div>

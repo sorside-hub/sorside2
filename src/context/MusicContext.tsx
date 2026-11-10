@@ -43,12 +43,31 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     setIsLoadingSanityMusic(true);
     try {
-      // Query untuk mengambil rilis dan trek dari Sanity
-      // Jika skema Sanity belum dipublish dokumennya, query mengembalikan array kosong
+      // Query untuk mengambil dokumen Single dan EP/Album dari Sanity
       const musicQuery = `{
-        "releases": *[_type == "release" && status != "draft"] | order(releaseDate desc) {
+        "singles": *[_type == "single" && status != "draft"] | order(releaseDate desc) {
           _id,
-          id,
+          title,
+          "slug": slug.current,
+          releaseDate,
+          displayYear,
+          status,
+          description,
+          coverArt,
+          coverArtAlt,
+          "audioUrl": audioFile.asset->url,
+          duration,
+          lyrics,
+          behindTheSong,
+          spotifyUrl,
+          youtubeUrl,
+          appleMusicUrl,
+          bandcampUrl,
+          credits,
+          featured
+        },
+        "albums": *[_type == "album" && status != "draft"] | order(releaseDate desc) {
+          _id,
           title,
           "slug": slug.current,
           releaseType,
@@ -58,77 +77,157 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           description,
           coverArt,
           coverArtAlt,
-          trackIds,
-          credits,
           behindTheRelease,
-          streamingLinks,
-          featured,
-          "audioUrl": audioFile.asset->url
-        },
-        "tracks": *[_type == "track" && status != "draft"] | order(trackNumber asc) {
-          _id,
-          id,
-          title,
-          "slug": slug.current,
-          releaseId,
-          trackNumber,
-          duration,
-          status,
-          description,
-          coverArt,
-          coverArtAlt,
-          "audioUrl": audioFile.asset->url,
-          lyrics,
-          behindTheSong,
+          spotifyUrl,
+          youtubeUrl,
+          appleMusicUrl,
           credits,
-          relatedWritingIds,
-          streamingLinks
+          featured,
+          tracks[] {
+            trackNumber,
+            title,
+            slug,
+            duration,
+            "audioUrl": audioFile.asset->url,
+            lyrics,
+            description,
+            behindTheSong,
+            spotifyUrl,
+            youtubeUrl,
+            credits
+          }
         }
       }`;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data: any = await sanityClient.fetch(musicQuery);
 
-      if (data?.releases && data.releases.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mappedReleases: Release[] = data.releases.map((r: any) => ({
-          id: r.id || r._id,
-          title: r.title || 'Tanpa Judul',
-          slug: r.slug || '',
-          releaseType: r.releaseType || 'single',
-          releaseDate: r.releaseDate || new Date().toISOString().split('T')[0],
-          displayYear: r.displayYear || '2026',
-          status: r.status || 'released',
-          description: r.description || '',
-          coverArtUrl: r.coverArt ? urlForImage(r.coverArt) : undefined,
-          coverArtAlt: r.coverArtAlt,
-          trackIds: r.trackIds || [],
-          credits: r.credits || [],
-          behindTheRelease: r.behindTheRelease || '',
-          streamingLinks: r.streamingLinks || [],
-          featured: Boolean(r.featured),
-          audioUrl: r.audioUrl,
-        }));
+      const hasSingles = data?.singles && data.singles.length > 0;
+      const hasAlbums = data?.albums && data.albums.length > 0;
 
+      if (hasSingles || hasAlbums) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mappedTracks: Track[] = (data.tracks || []).map((t: any) => ({
-          id: t.id || t._id,
-          title: t.title || 'Tanpa Judul',
-          slug: t.slug || '',
-          releaseId: t.releaseId || '',
-          trackNumber: t.trackNumber || 1,
-          duration: t.duration || '03:00',
-          status: t.status || 'released',
-          description: t.description || '',
-          coverArtUrl: t.coverArt ? urlForImage(t.coverArt) : undefined,
-          coverArtAlt: t.coverArtAlt,
-          audioUrl: t.audioUrl,
-          lyrics: t.lyrics || '',
-          behindTheSong: t.behindTheSong || '',
-          credits: t.credits || [],
-          relatedWritingIds: t.relatedWritingIds || [],
-          streamingLinks: t.streamingLinks || [],
-        }));
+        const buildStreamingLinks = (item: any) => {
+          const links: { platform: string; url: string }[] = [];
+          if (item?.spotifyUrl) links.push({ platform: 'Spotify', url: item.spotifyUrl });
+          if (item?.youtubeUrl) links.push({ platform: 'YouTube', url: item.youtubeUrl });
+          if (item?.appleMusicUrl) links.push({ platform: 'Apple Music', url: item.appleMusicUrl });
+          if (item?.bandcampUrl) links.push({ platform: 'Bandcamp', url: item.bandcampUrl });
+          return links;
+        };
+
+        const mappedReleases: Release[] = [];
+        const mappedTracks: Track[] = [];
+
+        // 1. Petakan Single (1 Dokumen Single = 1 Rilis + 1 Trek Lagu Langsung)
+        if (hasSingles) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.singles.forEach((s: any) => {
+            const singleSlug = s.slug || '';
+            const singleLinks = buildStreamingLinks(s);
+            const singleTrackId = `single-${s._id}`;
+
+            mappedReleases.push({
+              id: s._id,
+              title: s.title || 'Tanpa Judul',
+              slug: singleSlug,
+              releaseType: 'single',
+              releaseDate: s.releaseDate || new Date().toISOString().split('T')[0],
+              displayYear: s.displayYear || new Date().getFullYear().toString(),
+              status: s.status || 'released',
+              description: s.description || '',
+              coverArtUrl: s.coverArt ? urlForImage(s.coverArt) : undefined,
+              coverArtAlt: s.coverArtAlt,
+              audioUrl: s.audioUrl,
+              behindTheRelease: s.behindTheSong || '',
+              credits: s.credits || [],
+              streamingLinks: singleLinks,
+              featured: Boolean(s.featured),
+              trackIds: [singleTrackId],
+            });
+
+            mappedTracks.push({
+              id: singleTrackId,
+              title: s.title || 'Tanpa Judul',
+              slug: singleSlug,
+              releaseId: s._id,
+              trackNumber: 1,
+              duration: s.duration || '03:30',
+              status: s.status || 'released',
+              description: s.description || '',
+              coverArtUrl: s.coverArt ? urlForImage(s.coverArt) : undefined,
+              coverArtAlt: s.coverArtAlt,
+              audioUrl: s.audioUrl,
+              lyrics: s.lyrics || '',
+              behindTheSong: s.behindTheSong || '',
+              credits: s.credits || [],
+              relatedWritingIds: [],
+              streamingLinks: singleLinks,
+            });
+          });
+        }
+
+        // 2. Petakan EP & Album (Audio & Lirik HANYA ada di masing-masing tracklist)
+        if (hasAlbums) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.albums.forEach((alb: any) => {
+            const albumSlug = alb.slug || '';
+            const albumLinks = buildStreamingLinks(alb);
+            const albumTrackIds: string[] = [];
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (alb.tracks || []).forEach((t: any, idx: number) => {
+              const trackNumber = t.trackNumber || idx + 1;
+              const trackId = `${alb._id}-track-${trackNumber}`;
+              const trackSlug = t.slug || t.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || `track-${trackNumber}`;
+              const trackLinks = buildStreamingLinks(t);
+
+              albumTrackIds.push(trackId);
+              mappedTracks.push({
+                id: trackId,
+                title: t.title || `Trek ${trackNumber}`,
+                slug: trackSlug,
+                releaseId: alb._id,
+                trackNumber,
+                duration: t.duration || '03:30',
+                status: 'released',
+                description: t.description || '',
+                coverArtUrl: alb.coverArt ? urlForImage(alb.coverArt) : undefined,
+                coverArtAlt: alb.coverArtAlt,
+                audioUrl: t.audioUrl, // Audio KHUSUS ada di trek
+                lyrics: t.lyrics || '',
+                behindTheSong: t.behindTheSong || '',
+                credits: (t.credits && t.credits.length > 0) ? t.credits : (alb.credits || []),
+                relatedWritingIds: [],
+                streamingLinks: trackLinks.length > 0 ? trackLinks : albumLinks,
+              });
+            });
+
+            mappedReleases.push({
+              id: alb._id,
+              title: alb.title || 'Tanpa Judul',
+              slug: albumSlug,
+              releaseType: (alb.releaseType === 'album' ? 'album' : 'ep') as 'ep' | 'album',
+              releaseDate: alb.releaseDate || new Date().toISOString().split('T')[0],
+              displayYear: alb.displayYear || new Date().getFullYear().toString(),
+              status: alb.status || 'released',
+              description: alb.description || '',
+              coverArtUrl: alb.coverArt ? urlForImage(alb.coverArt) : undefined,
+              coverArtAlt: alb.coverArtAlt,
+              audioUrl: undefined, // Album HANYA koleksi, tidak punya audio master tunggal
+              behindTheRelease: alb.behindTheRelease || '',
+              credits: alb.credits || [],
+              streamingLinks: albumLinks,
+              featured: Boolean(alb.featured),
+              trackIds: albumTrackIds,
+            });
+          });
+        }
+
+        // Urutkan rilis berdasarkan tanggal terbaru
+        mappedReleases.sort(
+          (a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
+        );
 
         setReleases(mappedReleases);
         if (mappedTracks.length > 0) {
@@ -136,7 +235,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
         setIsUsingSanityMusic(true);
       } else {
-        // Fallback ke data lokal
+        // Fallback ke data lokal jika belum ada dokumen single atau album di Sanity
         setIsUsingSanityMusic(false);
       }
     } catch {
@@ -153,7 +252,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (isSanityConfigured() && sanityClient) {
       try {
         const sub = sanityClient
-          .listen(`*[_type in ["release", "track"]]`)
+          .listen(`*[_type in ["single", "album"]]`)
           .subscribe(() => {
             loadSanityMusic();
           });
