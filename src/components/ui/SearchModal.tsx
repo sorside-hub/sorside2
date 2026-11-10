@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, X, ArrowRight, BookOpen, Disc3 } from 'lucide-react';
 import { getArticlePlainText } from '../../content/articles';
 import { useArticles } from '../../context/ArticlesContext';
-import { RELEASES, TRACKS } from '../../content/music';
+import { useMusic } from '../../context/MusicContext';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -15,6 +15,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { articles } = useArticles();
+  const { releases, tracks } = useMusic();
 
   useEffect(() => {
     if (isOpen) {
@@ -64,7 +65,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
 
   // 2. Filter Rilisan Musik
   const filteredReleases = q
-    ? RELEASES.filter((release) => {
+    ? releases.filter((release) => {
         return (
           release.title.toLowerCase().includes(q) ||
           release.releaseType.toLowerCase().includes(q) ||
@@ -75,7 +76,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
 
   // 3. Filter Trek Lagu
   const filteredTracks = q
-    ? TRACKS.filter((track) => {
+    ? tracks.filter((track) => {
         return (
           track.title.toLowerCase().includes(q) ||
           (track.description && track.description.toLowerCase().includes(q))

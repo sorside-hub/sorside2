@@ -27,6 +27,7 @@ export interface Release {
   behindTheRelease?: string;
   streamingLinks?: StreamingLink[];
   featured?: boolean;
+  audioUrl?: string;
 }
 
 export interface Track {

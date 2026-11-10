@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Disc3, ArrowRight, ExternalLink, Search, X } from 'lucide-react';
-import { RELEASES, TRACKS, getTracksForRelease } from '../content/music';
+import { useMusic } from '../context/MusicContext';
 import { AudioPlayer } from '../components/music/AudioPlayer';
 
 type ReleaseTab = 'all' | 'single' | 'ep' | 'album';
@@ -17,6 +17,7 @@ export const MusicPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get('format') as ReleaseTab) || 'all';
   const searchQuery = searchParams.get('q') || '';
+  const { releases, tracks, getTracksForRelease } = useMusic();
 
   const handleFormatChange = (tabId: ReleaseTab) => {
     const nextParams = new URLSearchParams(searchParams);
@@ -52,26 +53,30 @@ export const MusicPage: React.FC = () => {
   // 1. RILISAN TERBARU (Hero atas: Rilisan dengan tanggal terbaru)
   const latestRelease = useMemo(() => {
     return (
-      [...RELEASES].sort(
+      [...releases].sort(
         (a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
-      )[0] || RELEASES[0]
+      )[0] || releases[0]
     );
-  }, []);
+  }, [releases]);
 
   const latestReleaseTrack = useMemo(() => {
-    return TRACKS.find((t) => t.releaseId === latestRelease.id) || TRACKS[0];
-  }, [latestRelease]);
+    if (!latestRelease) return tracks[0];
+    const releaseTracks = getTracksForRelease(latestRelease);
+    return releaseTracks[0] || tracks.find((t) => t.releaseId === latestRelease.id) || tracks[0];
+  }, [latestRelease, tracks, getTracksForRelease]);
 
-  // 2. RILISAN PILIHAN / PALING TOP (EP "Sudut dan Bayangan" & Album "Gema Ruang Sunyi")
+  // 2. RILISAN PILIHAN / PALING TOP
   const featuredReleases = useMemo(() => {
-    return RELEASES.filter((r) => r.slug === 'sudut-dan-bayangan' || r.slug === 'gema-ruang-sunyi');
-  }, []);
+    const explicitlyFeatured = releases.filter((r) => r.featured);
+    if (explicitlyFeatured.length > 0) return explicitlyFeatured;
+    return releases.filter((r) => r.slug === 'sudut-dan-bayangan' || r.slug === 'gema-ruang-sunyi');
+  }, [releases]);
 
   // 3. DAFTAR RILISAN BERDASARKAN FILTER TAB & PENCARIAN (JUDUL RILISAN, FORMAT, DESKRIPSI, MAUPUN NAMA TREK)
   const filteredReleases = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
 
-    return RELEASES.filter((release) => {
+    return releases.filter((release) => {
       // 1. Filter Tab Format
       const matchesFormat = activeTab === 'all' || release.releaseType === activeTab;
       if (!matchesFormat) return false;
@@ -89,25 +94,26 @@ export const MusicPage: React.FC = () => {
       if (release.description && release.description.toLowerCase().includes(query)) return true;
 
       // Cek nama trek lagu di dalam rilisan ini
-      const releaseTracks = getTracksForRelease(release);
-      const matchesAnyTrack = releaseTracks.some((trk) =>
+      const relTracks = getTracksForRelease(release);
+      const matchesAnyTrack = relTracks.some((trk) =>
         trk.title.toLowerCase().includes(query) ||
         (trk.description && trk.description.toLowerCase().includes(query))
       );
 
       return matchesAnyTrack;
     });
-  }, [activeTab, searchQuery]);
+  }, [releases, activeTab, searchQuery, getTracksForRelease]);
 
   // Hitung jumlah untuk badge tab
   const formatCounts = useMemo(() => {
     return {
-      all: RELEASES.length,
-      single: RELEASES.filter((r) => r.releaseType === 'single').length,
-      ep: RELEASES.filter((r) => r.releaseType === 'ep').length,
-      album: RELEASES.filter((r) => r.releaseType === 'album').length,
+      all: releases.length,
+      single: releases.filter((r) => r.releaseType === 'single').length,
+      ep: releases.filter((r) => r.releaseType === 'ep').length,
+      album: releases.filter((r) => r.releaseType === 'album').length,
     };
-  }, []);
+  }, [releases]);
+
 
   const isSearching = searchQuery.trim().length > 0;
 
@@ -246,17 +252,15 @@ export const MusicPage: React.FC = () => {
                 </div>
 
                 {/* Pemutar Audio Langsung untuk Lagu Terbaru Ini */}
-                {latestReleaseTrack?.audioUrl && (
-                  <div className="mt-8 pt-6 border-t border-[#E2DAC8]/80 dark:border-[#2D2B26]/80">
-                    <p className="text-[10px] font-sans uppercase tracking-widest text-stone-500 mb-3">
-                      Dengarkan Rekaman Audio
-                    </p>
-                    <AudioPlayer
-                      src={latestReleaseTrack.audioUrl}
-                      title={latestReleaseTrack.title}
-                    />
-                  </div>
-                )}
+                <div className="mt-8 pt-6 border-t border-[#E2DAC8]/80 dark:border-[#2D2B26]/80">
+                  <p className="text-[10px] font-sans uppercase tracking-widest text-stone-500 mb-3">
+                    Dengarkan Rekaman Audio
+                  </p>
+                  <AudioPlayer
+                    src={latestReleaseTrack?.audioUrl || latestRelease?.audioUrl}
+                    title={latestReleaseTrack?.title || latestRelease?.title || 'Rekaman Audio'}
+                  />
+                </div>
 
                 {/* Aksi Buka Rilisan */}
                 <div className="mt-8 pt-4 flex items-center justify-between">

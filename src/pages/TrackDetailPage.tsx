@@ -1,12 +1,8 @@
 import React, { useMemo, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ExternalLink, Disc3, Music2, BookOpen } from 'lucide-react';
-import {
-  getTrackBySlug,
-  getReleaseById,
-  getRelatedArticlesForTrack,
-  getTracksForRelease,
-} from '../content/music';
+import { getRelatedArticlesForTrack } from '../content/music';
+import { useMusic } from '../context/MusicContext';
 import { AudioPlayer } from '../components/music/AudioPlayer';
 
 const translateCreditRole = (role: string): string => {
@@ -64,6 +60,7 @@ const renderStanzaBlock = (stanza: string, idx: number) => {
 
 export const TrackDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { getTrackBySlug, getReleaseById, getTracksForRelease } = useMusic();
 
   // Selalu scroll ke paling atas saat membuka trek baru
   useEffect(() => {
@@ -234,14 +231,12 @@ export const TrackDetailPage: React.FC = () => {
               </div>
 
               {/* Pemutar Audio Langsung untuk Lagu Ini */}
-              {track.audioUrl && (
-                <div className="mt-8 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26]">
-                  <p className="text-[10px] font-sans font-semibold uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2.5">
-                    Dengarkan Rekaman Trek Ini
-                  </p>
-                  <AudioPlayer src={track.audioUrl} title={track.title} />
-                </div>
-              )}
+              <div className="mt-8 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26]">
+                <p className="text-[10px] font-sans font-semibold uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2.5">
+                  Dengarkan Rekaman Trek Ini
+                </p>
+                <AudioPlayer src={track.audioUrl} title={track.title} />
+              </div>
             </div>
           </div>
         </div>

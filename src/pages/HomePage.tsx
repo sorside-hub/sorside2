@@ -7,7 +7,7 @@ import {
   ABOUT_PORTRAIT_IMAGE,
 } from '../content/articles';
 import { useArticles } from '../context/ArticlesContext';
-import { getVisibleReleases, TRACKS, getTracksForRelease } from '../content/music';
+import { useMusic } from '../context/MusicContext';
 import { AudioPlayer } from '../components/music/AudioPlayer';
 
 const formatIndonesianDate = (dateStr: string, fallback?: string): string => {
@@ -40,15 +40,14 @@ export const HomePage: React.FC = () => {
   const latestArticles = visibleArticles
     .filter((a) => a.slug !== featuredArticle.slug)
     .slice(0, 3);
-  const releases = getVisibleReleases();
-  
+  const { visibleReleases: releases, featuredTrack, getTracksForRelease } = useMusic();
+
   // Latest Release (EP "Sudut dan Bayangan")
   const latestRelease = releases.find((r) => r.slug === 'sudut-dan-bayangan') || releases[0];
   const latestReleaseTracks = getTracksForRelease(latestRelease);
 
   // Featured Music / Acoustic Spotlight ("Langkah yang Tertinggal")
-  const featuredTrack = TRACKS[0];
-  const featuredRelease = releases.find((r) => r.id === featuredTrack.releaseId) || releases[0];
+  const featuredRelease = releases.find((r) => r.id === featuredTrack?.releaseId) || releases[0];
 
   // Ekstraksi paragraf dinamis untuk preview broadsheet tulisan sorotan
   const featuredPlainText = getArticlePlainText(featuredArticle.content);
@@ -388,12 +387,10 @@ export const HomePage: React.FC = () => {
 
                 {/* Embedded HTML5 Audio Player */}
                 <div className="mt-4">
-                  {featuredTrack.audioUrl && (
-                    <AudioPlayer
-                      src={featuredTrack.audioUrl}
-                      title={featuredTrack.title}
-                    />
-                  )}
+                  <AudioPlayer
+                    src={featuredTrack.audioUrl}
+                    title={featuredTrack.title}
+                  />
                 </div>
               </div>
             </div>

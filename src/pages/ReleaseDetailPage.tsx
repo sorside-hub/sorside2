@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, ExternalLink, Disc3, Play } from 'lucide-react';
-import { RELEASES, getTracksForRelease } from '../content/music';
+import { useMusic } from '../context/MusicContext';
 import { Track } from '../types/music';
 import { AudioPlayer } from '../components/music/AudioPlayer';
 
@@ -86,6 +86,7 @@ const renderStanzaBlock = (stanza: string, idx: number) => {
 
 export const ReleaseDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { releases, getTracksForRelease } = useMusic();
 
   // Selalu scroll ke paling atas saat membuka rilis baru
   useEffect(() => {
@@ -93,20 +94,20 @@ export const ReleaseDetailPage: React.FC = () => {
   }, [slug]);
 
   const currentIndex = useMemo(() => {
-    return RELEASES.findIndex((r) => r.slug === slug);
-  }, [slug]);
+    return releases.findIndex((r) => r.slug === slug);
+  }, [releases, slug]);
 
   if (currentIndex === -1) {
     return <Navigate to="/music" replace />;
   }
 
-  const release = RELEASES[currentIndex];
+  const release = releases[currentIndex];
   const tracks = getTracksForRelease(release);
   const isSingle = release.releaseType === 'single';
   const leadTrack = tracks[0];
 
-  const prevRelease = currentIndex > 0 ? RELEASES[currentIndex - 1] : null;
-  const nextRelease = currentIndex < RELEASES.length - 1 ? RELEASES[currentIndex + 1] : null;
+  const prevRelease = currentIndex > 0 ? releases[currentIndex - 1] : null;
+  const nextRelease = currentIndex < releases.length - 1 ? releases[currentIndex + 1] : null;
 
   const dateLabel = formatIndonesianDate(release.releaseDate, release.displayYear);
   const totalDurationLabel = calculateTotalDuration(tracks);
@@ -138,7 +139,7 @@ export const ReleaseDetailPage: React.FC = () => {
             <span>Tahun {release.displayYear}</span>
             <span>·</span>
             <span>
-              Arsip {String(currentIndex + 1).padStart(2, '0')} / {String(RELEASES.length).padStart(2, '0')}
+              Arsip {String(currentIndex + 1).padStart(2, '0')} / {String(releases.length).padStart(2, '0')}
             </span>
           </div>
         </div>
@@ -253,13 +254,13 @@ export const ReleaseDetailPage: React.FC = () => {
               </div>
 
               {/* Pemutar Audio Langsung */}
-              {leadTrack?.audioUrl && (
+              {(leadTrack?.audioUrl || release.audioUrl || isSingle) && (
                 <div className="mt-8 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26]">
                   <div className="flex items-center justify-between mb-2.5">
                     <p className="text-[10px] font-sans font-semibold uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                      {isSingle ? 'Putar Lagu Ini' : `Lagu Pembuka · 01. ${leadTrack.title}`}
+                      {isSingle ? 'Putar Lagu Ini' : `Lagu Pembuka · 01. ${leadTrack?.title || release.title}`}
                     </p>
-                    {!isSingle && (
+                    {!isSingle && leadTrack && (
                       <Link
                         to={`/music/tracks/${leadTrack.slug}`}
                         className="text-[11px] font-sans text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 underline"
@@ -268,7 +269,7 @@ export const ReleaseDetailPage: React.FC = () => {
                       </Link>
                     )}
                   </div>
-                  <AudioPlayer src={leadTrack.audioUrl} title={leadTrack.title} />
+                  <AudioPlayer src={leadTrack?.audioUrl || release.audioUrl} title={leadTrack?.title || release.title} />
                 </div>
               )}
             </div>
