@@ -20,8 +20,8 @@ export const Footer: React.FC = () => {
           </p>
         </div>
 
-        {/* Tengah: Navigasi Cepat Sederhana */}
-        <nav className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs uppercase tracking-[0.16em] font-sans text-stone-400">
+        {/* Tengah: Navigasi Cepat Sederhana (pasti 1 baris di mobile) */}
+        <nav className="flex items-center gap-2 sm:gap-5 text-[10.5px] sm:text-xs uppercase tracking-wider sm:tracking-[0.16em] font-sans text-stone-400 whitespace-nowrap">
           <Link to="/" className="hover:text-stone-100 transition-colors">
             beranda
           </Link>
@@ -72,10 +72,9 @@ export const Footer: React.FC = () => {
         </div>
       </div>
 
-      {/* Baris Bawah: Hak Cipta & Kutipan */}
-      <div className="w-full px-6 lg:px-12 xl:px-16 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[11px] font-sans text-stone-500">
+      {/* Baris Bawah: Hak Cipta */}
+      <div className="w-full px-6 lg:px-12 xl:px-16 pt-6 flex items-center justify-between text-[11px] font-sans text-stone-500">
         <p>© 2026 sorside. Semua karya dilindungi hak cipta oleh Sor.</p>
-        <p className="font-serif italic text-stone-400">&ldquo;Every side has a story.&rdquo;</p>
       </div>
     </footer>
   );

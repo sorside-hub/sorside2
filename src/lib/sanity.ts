@@ -58,10 +58,12 @@ export interface SanityArticleDoc {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   coverImage?: any;
   coverAlt?: string;
-  content: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  content: string | any;
   status?: 'published' | 'draft';
   featured?: boolean;
   relatedTrackSlug?: string;
+  fontFamily?: 'sans' | 'serif' | 'mono';
 }
 
 /**
@@ -88,6 +90,7 @@ export const mapSanityDocToArticle = (doc: SanityArticleDoc): Article => {
     status: doc.status || 'published',
     featured: Boolean(doc.featured),
     relatedTrackSlug: doc.relatedTrackSlug,
+    fontFamily: doc.fontFamily || 'serif',
   };
 };
 
@@ -113,7 +116,8 @@ export const fetchArticlesFromSanity = async (): Promise<Article[] | null> => {
       content,
       status,
       featured,
-      relatedTrackSlug
+      relatedTrackSlug,
+      fontFamily
     }`;
 
     const docs: SanityArticleDoc[] = await sanityClient.fetch(query);
@@ -153,4 +157,117 @@ export const subscribeToArticlesFromSanity = (
     return () => {};
   }
 };
+
+/**
+ * Tipe data dokumen Halaman Tentang (About Page) dari Sanity
+ */
+export interface SanityAboutPageDoc {
+  kicker?: string;
+  heading?: string;
+  statement?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  portraitImage?: any;
+  portraitCaption?: string;
+  storyTitle?: string;
+  storyLead?: string;
+  storyBody?: string;
+  contactHeading?: string;
+  contactDescription?: string;
+  contactEmail?: string;
+  fontFamily?: 'sans' | 'serif' | 'mono';
+}
+
+export interface AboutPageData {
+  kicker: string;
+  heading: string;
+  statement: string;
+  portraitImageUrl?: string;
+  portraitCaption: string;
+  storyTitle: string;
+  storyLead: string;
+  storyBody: string;
+  contactHeading: string;
+  contactDescription: string;
+  contactEmail: string;
+  fontFamily?: 'sans' | 'serif' | 'mono';
+}
+
+export const mapSanityDocToAboutPageData = (doc: SanityAboutPageDoc): AboutPageData => {
+  const portraitImageUrl = doc.portraitImage ? urlForImage(doc.portraitImage) : undefined;
+
+  return {
+    kicker: doc.kicker || 'manifesto & identitas · sorside',
+    heading: doc.heading || 'tentang sorside.',
+    statement: doc.statement || 'Sebuah ruang mandiri untuk merawat pemikiran, merekam suara-suara kota, dan mendokumentasikan apa yang tak sempat diucapkan.',
+    portraitImageUrl,
+    portraitCaption: doc.portraitCaption || 'Dokumentasi Studio · Sorside',
+    storyTitle: doc.storyTitle || 'Bukan ruang bising yang menuntut algoritma.',
+    storyLead: doc.storyLead || 'Sorside lahir dari keinginan sederhana: memiliki satu sudut tenang di internet di mana kata-kata dan bunyi tidak diukur oleh metrik viralitas atau keharusan untuk menyenangkan semua orang.',
+    storyBody: doc.storyBody || '',
+    contactHeading: doc.contactHeading || 'Pintu surat selalu terbuka.',
+    contactDescription: doc.contactDescription || 'Jika ada pemikiran yang bersinggungan, tanggapan atas esai, atau sekadar ingin bertukar salam di larut malam, silakan kirimkan surel langsung ke ruang kerja saya.',
+    contactEmail: doc.contactEmail || 'contact@sorside.com',
+    fontFamily: doc.fontFamily || 'sans',
+  };
+};
+
+/**
+ * Ambil data Halaman Tentang dari Sanity
+ */
+export const fetchAboutPageFromSanity = async (): Promise<AboutPageData | null> => {
+  if (!sanityClient) return null;
+
+  try {
+    const query = `*[_type == "aboutPage"][0] {
+      kicker,
+      heading,
+      statement,
+      portraitImage,
+      portraitCaption,
+      storyTitle,
+      storyLead,
+      storyBody,
+      contactHeading,
+      contactDescription,
+      contactEmail,
+      fontFamily
+    }`;
+
+    const doc: SanityAboutPageDoc = await sanityClient.fetch(query);
+    if (!doc) return null;
+
+    return mapSanityDocToAboutPageData(doc);
+  } catch (err) {
+    console.warn('[Sanity CMS] Gagal mengambil data About Page dari Sanity:', err);
+    return null;
+  }
+};
+
+/**
+ * Langganan perubahan data Halaman Tentang secara Real-time
+ */
+export const subscribeToAboutPageFromSanity = (
+  onAboutUpdate: (aboutData: AboutPageData) => void
+) => {
+  if (!sanityClient) return () => {};
+
+  const query = `*[_type == "aboutPage"]`;
+
+  try {
+    const subscription = sanityClient.listen(query).subscribe(async () => {
+      const updatedData = await fetchAboutPageFromSanity();
+      if (updatedData) {
+        onAboutUpdate(updatedData);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  } catch (err) {
+    console.warn('[Sanity Live Sync] Gagal mengaktifkan live subscription About Page:', err);
+    return () => {};
+  }
+};
+
 

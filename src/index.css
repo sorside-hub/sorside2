@@ -2,9 +2,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-serif: "Playfair Display", Georgia, serif;
+  --font-serif: "Newsreader", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-  --font-handwriting: "Caveat", cursive, sans-serif;
 }
 
 :root {

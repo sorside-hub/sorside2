@@ -60,6 +60,20 @@ export const ArticleDetailPage: React.FC = () => {
   const relatedTrack = article.relatedTrackSlug ? getTrackBySlug(article.relatedTrackSlug) : undefined;
   const relatedRelease = relatedTrack ? getReleaseById(relatedTrack.releaseId) : undefined;
 
+  const titleFontClass =
+    article.fontFamily === 'sans'
+      ? 'font-sans font-bold tracking-tight'
+      : article.fontFamily === 'mono'
+      ? 'font-mono font-bold'
+      : 'font-serif font-bold tracking-tight';
+
+  const excerptFontClass =
+    article.fontFamily === 'sans'
+      ? 'font-sans italic'
+      : article.fontFamily === 'mono'
+      ? 'font-mono italic'
+      : 'font-serif italic';
+
   return (
     <article className="w-full bg-[#F4EFEA] dark:bg-[#161513] transition-colors pb-16 sm:pb-24">
       {/* 1. STRIP NAVIGASI ATAS (FULL-WIDTH) */}
@@ -100,12 +114,12 @@ export const ArticleDetailPage: React.FC = () => {
                   )}
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 dark:text-stone-50 leading-[1.14] tracking-tight">
+                <h1 className={`text-3xl sm:text-4xl lg:text-5xl text-stone-900 dark:text-stone-50 leading-[1.14] ${titleFontClass}`}>
                   {article.title}
                 </h1>
 
                 {article.excerpt && (
-                  <p className="mt-4 sm:mt-5 text-base sm:text-lg lg:text-xl text-stone-700 dark:text-stone-300 font-serif italic leading-relaxed">
+                  <p className={`mt-4 sm:mt-5 text-base sm:text-lg lg:text-xl text-stone-700 dark:text-stone-300 leading-relaxed ${excerptFontClass}`}>
                     &ldquo;{article.excerpt}&rdquo;
                   </p>
                 )}
@@ -147,12 +161,12 @@ export const ArticleDetailPage: React.FC = () => {
               )}
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 dark:text-stone-50 leading-[1.12] tracking-tight">
+            <h1 className={`text-3xl sm:text-5xl lg:text-6xl text-stone-900 dark:text-stone-50 leading-[1.12] ${titleFontClass}`}>
               {article.title}
             </h1>
 
             {article.excerpt && (
-              <p className="mt-5 text-base sm:text-xl text-stone-700 dark:text-stone-300 font-serif italic leading-relaxed">
+              <p className={`mt-5 text-base sm:text-xl text-stone-700 dark:text-stone-300 leading-relaxed ${excerptFontClass}`}>
                 &ldquo;{article.excerpt}&rdquo;
               </p>
             )}
@@ -162,7 +176,7 @@ export const ArticleDetailPage: React.FC = () => {
 
       {/* 3. ISI TULISAN PANJANG (KOLOM BACA TENANG) */}
       <div className="max-w-2xl sm:max-w-3xl mx-auto px-6 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-8">
-        <ArticleBodyRenderer content={article.content} />
+        <ArticleBodyRenderer content={article.content} fontFamily={article.fontFamily} />
       </div>
 
       {/* 4. TAUTAN NADA / LAGU TERKAIT (JIKA ADA RELASI DENGAN MUSIK) */}
@@ -224,7 +238,7 @@ export const ArticleDetailPage: React.FC = () => {
 
             <div className="pt-4 md:pt-0 md:pl-8 md:border-l border-[#E2DAC8] dark:border-[#2D2B26] shrink-0">
               <span className="font-serif italic text-sm text-stone-700 dark:text-stone-300 block">
-                &ldquo;Every side has a story.&rdquo;
+                &ldquo;kata, bunyi, dan ruang mandiri.&rdquo;
               </span>
               <span className="text-[10px] font-sans uppercase tracking-widest text-stone-500 mt-1 block">
                 — Sor, Catatan Studio

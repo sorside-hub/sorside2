@@ -121,7 +121,7 @@ export const TrackDetailPage: React.FC = () => {
       {/* 2. HERO HEADER TREK: GRID LEBAR */}
       <header className="w-full border-b border-[#E2DAC8] dark:border-[#2D2B26] py-10 sm:py-14 lg:py-16">
         <div className="w-full px-6 lg:px-12 xl:px-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-14 items-start">
             {/* Kolom Kiri (lg:col-span-5): Sampul Rilis Induk & Streaming Links */}
             <div className="lg:col-span-5 flex flex-col items-center sm:items-start">
               <div className="w-full max-w-md aspect-square overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8] dark:border-[#2D2B26] shadow-sm relative group">
@@ -138,15 +138,6 @@ export const TrackDetailPage: React.FC = () => {
                   </div>
                 )}
 
-                {/* Badge Penanda Trek */}
-                <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 bg-stone-900/85 text-white text-[10px] font-mono uppercase tracking-wider">
-                    TREK 0{track.trackNumber}
-                  </span>
-                  <span className="px-2 py-0.5 bg-stone-900/85 text-white text-[10px] font-mono uppercase tracking-wider">
-                    {parentRelease.releaseType.toUpperCase()}
-                  </span>
-                </div>
               </div>
 
               {/* Streaming Links */}
@@ -232,9 +223,6 @@ export const TrackDetailPage: React.FC = () => {
 
               {/* Pemutar Audio Langsung untuk Lagu Ini */}
               <div className="mt-8 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26]">
-                <p className="text-[10px] font-sans font-semibold uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-2.5">
-                  Dengarkan Rekaman Trek Ini
-                </p>
                 <AudioPlayer src={track.audioUrl} title={track.title} />
               </div>
             </div>
@@ -249,11 +237,8 @@ export const TrackDetailPage: React.FC = () => {
             <div className="max-w-6xl mx-auto">
               <div className="flex items-center justify-between pb-4 mb-8 border-b border-[#E2DAC8]/80 dark:border-[#2D2B26]/80">
                 <div>
-                  <span className="text-[10px] font-sans font-semibold tracking-[0.25em] uppercase text-stone-500 dark:text-stone-400 block mb-1">
-                    Naskah Lirik Resmi
-                  </span>
                   <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100">
-                    Lirik Lagu — {track.title}
+                    Naskah Lirik
                   </h2>
                 </div>
                 <span className="text-xs font-mono text-stone-500 hidden sm:block">

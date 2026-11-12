@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 
 interface AudioPlayerProps {
   src?: string;
@@ -11,7 +11,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
   const [hasError, setHasError] = useState(false);
 
   const hasAudio = Boolean(src && src.trim().length > 0 && !hasError);
@@ -75,13 +74,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title }) => {
     setCurrentTime(newTime);
   };
 
-  const toggleMute = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.muted = !isMuted;
-    setIsMuted(!isMuted);
-  };
-
   const formatTime = (time: number) => {
     if (isNaN(time) || time <= 0) return '00:00';
     const mins = Math.floor(time / 60);
@@ -90,17 +82,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title }) => {
   };
 
   return (
-    <div className="p-4 sm:p-5 border border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/60 dark:bg-[#1A1916]/60 text-stone-900 dark:text-stone-100 transition-colors">
+    <div className="p-3.5 sm:p-4 border border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/60 dark:bg-[#1A1916]/60 text-stone-900 dark:text-stone-100 transition-colors">
       {src && <audio ref={audioRef} src={src} preload="metadata" />}
-
-      <div className="flex items-center justify-between gap-4 mb-3">
-        <span className="text-[10px] font-sans font-semibold uppercase tracking-[0.2em] text-stone-500 dark:text-stone-400">
-          {hasAudio ? 'Pemutar Audio · Pratinjau Trek' : 'Arsip Studio · Pratinjau Audio'}
-        </span>
-        <span className="text-xs font-mono tabular-nums text-stone-500 dark:text-stone-400">
-          {hasAudio ? `${formatTime(currentTime)} / ${formatTime(duration)}` : 'Segera Hadir'}
-        </span>
-      </div>
 
       <div className="flex items-center gap-3 sm:gap-4">
         {/* Play/Pause Button */}
@@ -109,21 +92,21 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title }) => {
           onClick={togglePlay}
           disabled={!hasAudio}
           aria-label={isPlaying ? `Pause ${title}` : `Play ${title}`}
-          className={`w-10 h-10 flex items-center justify-center transition-all shrink-0 cursor-pointer ${
+          className={`w-9 h-9 flex items-center justify-center transition-all shrink-0 cursor-pointer ${
             hasAudio
-              ? 'bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 hover:opacity-90 shadow-2xs'
+              ? 'bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900 hover:opacity-90'
               : 'bg-stone-300 dark:bg-stone-800 text-stone-400 dark:text-stone-600 cursor-not-allowed opacity-60'
           }`}
         >
           {isPlaying ? (
-            <Pause className="w-4 h-4 fill-current" />
+            <Pause className="w-3.5 h-3.5 fill-current" />
           ) : (
-            <Play className="w-4 h-4 fill-current ml-0.5" />
+            <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
           )}
         </button>
 
         {/* Scrubber slider / Track bar */}
-        <div className="flex-1">
+        <div className="flex-1 flex flex-col justify-center">
           {hasAudio ? (
             <input
               type="range"
@@ -141,17 +124,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title }) => {
           )}
         </div>
 
-        {/* Volume Mute Toggle */}
-        {hasAudio && (
-          <button
-            type="button"
-            onClick={toggleMute}
-            aria-label={isMuted ? 'Unmute' : 'Mute'}
-            className="p-2 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors cursor-pointer"
-          >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-        )}
+        {/* Time display: 00:00 / 03:30 */}
+        <span className="text-xs font-mono tabular-nums text-stone-600 dark:text-stone-400 shrink-0">
+          {hasAudio ? `${formatTime(currentTime)} / ${formatTime(duration)}` : '00:00'}
+        </span>
       </div>
     </div>
   );

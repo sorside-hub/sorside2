@@ -79,10 +79,94 @@ export default defineConfig({
             type: 'string',
           },
           {
+            name: 'fontFamily',
+            title: 'Gaya Font Utama Tulisan',
+            type: 'string',
+            description: 'Pilih font dasar untuk seluruh tulisan ini. Teks italic/miring akan otomatis mengikuti font yang kamu pilih (contoh: jika pilih Jakarta Sans, teks miring akan menggunakan Jakarta Sans Italic).',
+            options: {
+              list: [
+                { title: 'Newsreader (Serif Sastra / Novel Klasik)', value: 'serif' },
+                { title: 'Plus Jakarta Sans (Modern / Humanis)', value: 'sans' },
+                { title: 'Monospace (Mesin Tik / Catatan Arsip)', value: 'mono' },
+              ],
+              layout: 'radio',
+            },
+            initialValue: 'serif',
+          },
+          {
             name: 'content',
-            title: 'Isi Naskah Tulisan (Markdown / TipTap / ChatGPT Compatible)',
-            type: 'markdown',
-            description: 'Tulis atau paste langsung naskah tulisanmu di sini dari TipTap atau ChatGPT. Mendukung sintaks Markdown, **bold**, *italic*, ### sub-judul, dan > kutipan.',
+            title: 'Isi Naskah Tulisan (Editor Visual & Toolbar)',
+            type: 'array',
+            description: 'Tulis naskah tulisanmu di sini. Gunakan toolbar untuk memformat teks (tebal, miring, subjudul, kutipan, dan tombol opsi font [Sans], [Serif], [Mono]).',
+            of: [
+              {
+                type: 'block',
+                styles: [
+                  { title: 'Normal (Paragraf)', value: 'normal' },
+                  { title: 'Subjudul Besar (H2)', value: 'h2' },
+                  { title: 'Subjudul Sedang (H3)', value: 'h3' },
+                  { title: 'Kutipan Blok (Blockquote)', value: 'blockquote' },
+                ],
+                lists: [
+                  { title: 'Daftar Poin (Bullet)', value: 'bullet' },
+                  { title: 'Daftar Angka (Number)', value: 'number' },
+                ],
+                marks: {
+                  decorators: [
+                    { title: 'Tebal (Bold)', value: 'strong' },
+                    { title: 'Miring (Italic)', value: 'em' },
+                    { title: 'Garis Bawah (Underline)', value: 'underline' },
+                    { title: 'Coret (Strikethrough)', value: 'strike-through' },
+                    { title: 'Kode Ringkas (Code)', value: 'code' },
+                    {
+                      title: 'Font: Plus Jakarta Sans',
+                      value: 'fontSans',
+                      icon: () => 'Sans',
+                    },
+                    {
+                      title: 'Font: Newsreader (Serif)',
+                      value: 'fontSerif',
+                      icon: () => 'Serif',
+                    },
+                    {
+                      title: 'Font: Monospace',
+                      value: 'fontMono',
+                      icon: () => 'Mono',
+                    },
+                  ],
+                  annotations: [
+                    {
+                      name: 'link',
+                      type: 'object',
+                      title: 'Tautan URL (Link)',
+                      fields: [
+                        {
+                          name: 'href',
+                          type: 'url',
+                          title: 'URL Tujuan',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+              {
+                type: 'image',
+                options: { hotspot: true },
+                fields: [
+                  {
+                    name: 'caption',
+                    type: 'string',
+                    title: 'Keterangan Gambar (Caption)',
+                  },
+                  {
+                    name: 'alt',
+                    type: 'string',
+                    title: 'Alt Text',
+                  },
+                ],
+              },
+            ],
           },
           {
             name: 'featured',
@@ -485,6 +569,100 @@ export default defineConfig({
                 ],
               },
             ],
+          },
+        ],
+      },
+      {
+        name: 'aboutPage',
+        title: 'Halaman Tentang (About)',
+        type: 'document',
+        fields: [
+          {
+            name: 'kicker',
+            title: 'Kicker / Label Atas',
+            type: 'string',
+            initialValue: 'manifesto & identitas · sorside',
+          },
+          {
+            name: 'heading',
+            title: 'Judul Utama',
+            type: 'string',
+            initialValue: 'tentang sorside.',
+          },
+          {
+            name: 'statement',
+            title: 'Pernyataan Sikap (Kutipan Besar Pengantar)',
+            type: 'text',
+            rows: 3,
+            initialValue: 'Sebuah ruang mandiri untuk merawat pemikiran, merekam suara-suara kota, dan mendokumentasikan apa yang tak sempat diucapkan.',
+          },
+          {
+            name: 'portraitImage',
+            title: 'Foto Potret Diri / Studio',
+            type: 'image',
+            options: {
+              hotspot: true,
+            },
+            description: 'Unggah foto potret siluet atau dokumentasi studio Sor.',
+          },
+          {
+            name: 'portraitCaption',
+            title: 'Keterangan Foto Potret',
+            type: 'string',
+            initialValue: 'Dokumentasi Studio · Sorside',
+          },
+          {
+            name: 'storyTitle',
+            title: 'Judul Esai Latar Belakang',
+            type: 'string',
+            initialValue: 'Bukan ruang bising yang menuntut algoritma.',
+          },
+          {
+            name: 'storyLead',
+            title: 'Kalimat Pembuka Esai (Italic)',
+            type: 'text',
+            rows: 3,
+            initialValue: 'Sorside lahir dari keinginan sederhana: memiliki satu sudut tenang di internet di mana kata-kata dan bunyi tidak diukur oleh metrik viralitas atau keharusan untuk menyenangkan semua orang.',
+          },
+          {
+            name: 'storyBody',
+            title: 'Isi Narasi / Manifesto (Markdown)',
+            type: 'markdown',
+            description: 'Tulis atau edit naskah narasi sorside dengan leluasa. Mendukung paragraf panjang, subjudul (###), dan format teks.',
+          },
+          {
+            name: 'fontFamily',
+            title: 'Gaya Font Narasi Manifesto',
+            type: 'string',
+            description: 'Pilih font untuk esai manifesto di Halaman Tentang.',
+            options: {
+              list: [
+                { title: 'Plus Jakarta Sans (Modern / Humanis)', value: 'sans' },
+                { title: 'Newsreader (Serif Sastra / Novel Klasik)', value: 'serif' },
+                { title: 'Monospace (Mesin Tik / Catatan Arsip)', value: 'mono' },
+              ],
+              layout: 'radio',
+            },
+            initialValue: 'sans',
+          },
+          {
+            name: 'contactHeading',
+            title: 'Judul Meja Korespondensi',
+            type: 'string',
+            initialValue: 'Pintu surat selalu terbuka.',
+          },
+          {
+            name: 'contactDescription',
+            title: 'Deskripsi Korespondensi',
+            type: 'text',
+            rows: 3,
+            initialValue: 'Jika ada pemikiran yang bersinggungan, tanggapan atas esai, atau sekadar ingin bertukar salam di larut malam, silakan kirimkan surel langsung ke ruang kerja saya.',
+          },
+          {
+            name: 'contactEmail',
+            title: 'Alamat Surel / Email Kontak',
+            type: 'string',
+            initialValue: 'contact@sorside.com',
           },
         ],
       },

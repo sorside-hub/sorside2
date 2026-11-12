@@ -8,6 +8,7 @@ import {
 } from '../content/articles';
 import { useArticles } from '../context/ArticlesContext';
 import { useMusic } from '../context/MusicContext';
+import { RELEASES } from '../content/music';
 import { AudioPlayer } from '../components/music/AudioPlayer';
 
 const formatIndonesianDate = (dateStr: string, fallback?: string): string => {
@@ -37,17 +38,31 @@ const getCategoryLabel = (category: string): string => {
 
 export const HomePage: React.FC = () => {
   const { articles: visibleArticles, featuredArticle } = useArticles();
-  const latestArticles = visibleArticles
-    .filter((a) => a.slug !== featuredArticle.slug)
-    .slice(0, 3);
+  // Jika ada lebih dari 1 tulisan, kecualikan yang disorot di atas. Jika hanya 1 tulisan, tetap tampilkan agar tidak kosong
+  const otherArticles = visibleArticles.filter((a) => a.slug !== featuredArticle.slug);
+  const latestArticles = (otherArticles.length > 0 ? otherArticles : visibleArticles).slice(0, 3);
   const { visibleReleases: releases, featuredTrack, getTracksForRelease } = useMusic();
 
-  // Latest Release (EP "Sudut dan Bayangan")
-  const latestRelease = releases.find((r) => r.slug === 'sudut-dan-bayangan') || releases[0];
+  // Latest Release (otomatis rilisan paling baru di urutan teratas)
+  const latestRelease = releases[0] || RELEASES[0];
   const latestReleaseTracks = getTracksForRelease(latestRelease);
+  const latestReleaseTrack = latestReleaseTracks[0];
 
-  // Featured Music / Acoustic Spotlight ("Langkah yang Tertinggal")
+  // Featured Music / Acoustic Spotlight
   const featuredRelease = releases.find((r) => r.id === featuredTrack?.releaseId) || releases[0];
+
+  // Ekstraksi data real untuk Musik Sorotan (tanpa teks karangan)
+  const featuredLyricSnippet = React.useMemo(() => {
+    if (!featuredTrack?.lyrics) return null;
+    const stanzas = featuredTrack.lyrics.trim().split(/\n\s*\n/);
+    return stanzas[0] || null;
+  }, [featuredTrack?.lyrics]);
+
+  const featuredBehindNote = React.useMemo(() => {
+    const raw = featuredRelease?.behindTheRelease?.trim();
+    if (!raw) return null;
+    return raw.split(/\n\s*\n/)[0] || null;
+  }, [featuredRelease?.behindTheRelease]);
 
   // Ekstraksi paragraf dinamis untuk preview broadsheet tulisan sorotan
   const featuredPlainText = getArticlePlainText(featuredArticle.content);
@@ -114,8 +129,7 @@ export const HomePage: React.FC = () => {
               {/* Kolom Pembuka Esai (7 cols) */}
               <div className="md:col-span-7 space-y-4">
                 <p className="text-sm sm:text-base text-stone-800 dark:text-stone-200 font-sans leading-[1.85]">
-                  <span className="text-4xl sm:text-5xl font-serif font-bold float-left mr-3 mt-1 leading-none text-stone-900 dark:text-stone-100">{dropCapChar}</span>
-                  {remainingFirstParagraph}
+                  <span className="text-4xl sm:text-5xl font-serif font-bold float-left mr-1.5 mt-0.5 leading-none text-stone-900 dark:text-stone-100">{dropCapChar}</span>{remainingFirstParagraph}
                 </p>
                 {secondParagraph && (
                   <p className="text-sm sm:text-base text-stone-700 dark:text-stone-300 font-sans leading-[1.85] line-clamp-3">
@@ -141,33 +155,33 @@ export const HomePage: React.FC = () => {
           {/* Action Row */}
           <div className="flex items-center justify-between pt-2">
             <Link
-              to={`/writing/${featuredArticle.slug}`}
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-sans font-semibold tracking-wider text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300 transition-colors border-b-2 border-stone-900 dark:border-stone-100 pb-0.5"
-            >
-              baca lengkap <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-
-            <Link
               to="/writing"
               className="text-xs font-sans text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors"
             >
               arsip semua tulisan →
             </Link>
+
+            <Link
+              to={`/writing/${featuredArticle.slug}`}
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-sans font-semibold tracking-wider text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300 transition-colors border-b-2 border-stone-900 dark:border-stone-100 pb-0.5"
+            >
+              baca lengkap <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
 
-        {/* Kolom Kanan (32% / 4 cols): RILIS MUSIK TERBARU (Kompak) */}
+        {/* Kolom Kanan (32% / 4 cols): RILIS MUSIK TERBARU (Kompak & Dinamis) */}
         <div className="lg:col-span-4 lg:pl-10 xl:pl-14 lg:border-l border-[#E2DAC8] dark:border-[#2D2B26] flex flex-col space-y-8 pt-8 lg:pt-0 border-t lg:border-t-0">
           <div className="bg-[#EFE9DF]/80 dark:bg-[#1C1B18]/80 p-5 sm:p-6 border border-[#E2DAC8] dark:border-[#2D2B26] rounded-sm shadow-2xs max-w-md w-full">
             <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-[#E2DAC8] dark:border-[#2D2B26]">
               <div className="flex items-center gap-2 text-stone-800 dark:text-stone-200">
                 <Disc3 className="w-4 h-4 text-stone-600 dark:text-stone-400 animate-spin-slow" />
                 <span className="text-[10px] font-sans font-semibold tracking-[0.2em] uppercase">
-                  Musik · Terbaru
+                  Rilisan {latestRelease.releaseType.toUpperCase()}
                 </span>
               </div>
               <span className="text-[10px] font-mono text-stone-500 uppercase tracking-wider">
-                {latestRelease.releaseType}
+                {formatIndonesianDate(latestRelease.releaseDate, latestRelease.displayYear)}
               </span>
             </div>
 
@@ -185,9 +199,6 @@ export const HomePage: React.FC = () => {
                     loading="lazy"
                   />
                 )}
-                <span className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-stone-900/80 text-white text-[9px] font-mono uppercase tracking-wider">
-                  {latestRelease.displayYear}
-                </span>
               </Link>
 
               <div>
@@ -196,47 +207,59 @@ export const HomePage: React.FC = () => {
                     {latestRelease.title}
                   </h3>
                 </Link>
-                <p className="text-xs text-stone-600 dark:text-stone-400 font-sans mt-1.5 leading-relaxed">
+                <p className="text-xs text-stone-600 dark:text-stone-400 font-sans mt-1.5 leading-relaxed line-clamp-2">
                   {latestRelease.description}
                 </p>
               </div>
             </div>
 
-            {/* Repertoire Tracklist Preview */}
-            <div className="pt-3 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 mb-4">
-              <p className="text-[10px] font-sans uppercase tracking-widest text-stone-500 mb-2">
-                Daftar Trek ({latestReleaseTracks.length})
-              </p>
-              <div className="space-y-1.5 text-xs font-sans">
-                {latestReleaseTracks.map((trk, i) => (
-                  <Link
-                    key={trk.id}
-                    to={`/music/tracks/${trk.slug}`}
-                    className="flex items-baseline justify-between py-1 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-stone-100 transition-colors group"
-                  >
-                    <span className="flex items-baseline gap-2 truncate">
-                      <span className="text-[10px] font-mono text-stone-400 shrink-0">0{i + 1}.</span>
-                      <span className="truncate group-hover:underline">{trk.title}</span>
-                    </span>
-                    <span className="text-[10px] font-mono text-stone-400 shrink-0 ml-3">{trk.duration}</span>
-                  </Link>
-                ))}
+            {/* Jika Single: Langsung Pemutar Audio Bersih */}
+            {latestRelease.releaseType === 'single' ? (
+              <div className="pt-3 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 mb-4">
+                <AudioPlayer
+                  src={latestReleaseTrack?.audioUrl || latestRelease.audioUrl}
+                  title={latestReleaseTrack?.title || latestRelease.title}
+                />
               </div>
-            </div>
+            ) : (
+              /* Jika EP / Album: Daftar Trek Bernomor */
+              latestReleaseTracks.length > 0 && (
+                <div className="pt-3 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 mb-4">
+                  <p className="text-[10px] font-sans uppercase tracking-widest text-stone-500 mb-2">
+                    Daftar Trek ({latestReleaseTracks.length})
+                  </p>
+                  <div className="space-y-1.5 text-xs font-sans">
+                    {latestReleaseTracks.map((trk, i) => (
+                      <Link
+                        key={trk.id}
+                        to={`/music/tracks/${trk.slug}`}
+                        className="flex items-baseline justify-between py-1 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-stone-100 transition-colors group"
+                      >
+                        <span className="flex items-baseline gap-2 truncate">
+                          <span className="text-[10px] font-mono text-stone-400 shrink-0">0{i + 1}.</span>
+                          <span className="truncate group-hover:underline">{trk.title}</span>
+                        </span>
+                        <span className="text-[10px] font-mono text-stone-400 shrink-0 ml-3">{trk.duration}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )
+            )}
 
             {/* Bottom Actions */}
             <div className="pt-3 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 flex items-center justify-between text-xs">
               <Link
+                to="/music"
+                className="text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 text-xs"
+              >
+                katalog musik →
+              </Link>
+              <Link
                 to={`/music/releases/${latestRelease.slug}`}
                 className="text-stone-900 dark:text-stone-100 font-semibold inline-flex items-center gap-1 hover:underline"
               >
-                Buka Rilisan EP <ArrowRight className="w-3 h-3" />
-              </Link>
-              <Link
-                to="/music"
-                className="text-stone-500 dark:text-stone-400 hover:text-stone-700 text-[11px]"
-              >
-                Katalog Musik
+                buka rilisan <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
@@ -250,15 +273,9 @@ export const HomePage: React.FC = () => {
          ========================================================================= */}
       <section className="-mx-6 lg:-mx-12 xl:-mx-16 px-6 lg:px-12 xl:px-16 border-t border-b border-[#E2DAC8] dark:border-[#2D2B26] py-12 sm:py-16 my-16 sm:my-24 bg-[#EFE9DF]/40 dark:bg-[#181714]/40 text-center">
         <div className="max-w-3xl mx-auto px-4">
-          <p className="text-[10px] font-sans font-semibold tracking-[0.25em] uppercase text-stone-500 dark:text-stone-400 mb-3">
-            Goresan Pemikiran
-          </p>
           <blockquote className="text-xl sm:text-2xl lg:text-3xl font-serif italic text-stone-800 dark:text-stone-100 leading-snug sm:leading-relaxed">
             &ldquo;Di antara sudut-sudut kota yang bising, selalu ada sisi sunyi yang menunggu untuk didengar.&rdquo;
           </blockquote>
-          <p className="text-xs font-sans text-stone-500 dark:text-stone-400 mt-4">
-            Dari catatan lagu <span className="font-serif italic text-stone-700 dark:text-stone-300">Langkah yang Tertinggal</span>
-          </p>
         </div>
       </section>
 
@@ -290,7 +307,9 @@ export const HomePage: React.FC = () => {
                 <article key={article.slug} className="py-5 first:pt-0 last:pb-0 group">
                   <div className="flex items-baseline gap-2 text-[10px] font-mono text-stone-500 mb-1.5">
                     <span className="font-semibold text-stone-700 dark:text-stone-300">0{idx + 1}.</span>
-                    <span className="uppercase tracking-wider">{article.category}</span>
+                    <span className="uppercase tracking-wider">{getCategoryLabel(article.category)}</span>
+                    <span>·</span>
+                    <span>{formatIndonesianDate(article.date, article.displayDate)}</span>
                     <span>·</span>
                     <span>{article.readTime?.replace(/min read/i, 'menit baca') || calculateReadTime(article.content)}</span>
                   </div>
@@ -305,12 +324,14 @@ export const HomePage: React.FC = () => {
                     {article.excerpt}
                   </p>
 
-                  <Link
-                    to={`/writing/${article.slug}`}
-                    className="inline-flex items-center gap-1 text-[11px] font-sans font-medium text-stone-900 dark:text-stone-200 group-hover:text-stone-600 dark:group-hover:text-stone-400 mt-2 transition-colors"
-                  >
-                    baca <ArrowRight className="w-3 h-3" />
-                  </Link>
+                  <div className="flex items-center justify-end mt-2">
+                    <Link
+                      to={`/writing/${article.slug}`}
+                      className="inline-flex items-center gap-1 text-[11px] font-sans font-medium text-stone-900 dark:text-stone-200 group-hover:text-stone-600 dark:group-hover:text-stone-400 transition-colors"
+                    >
+                      baca tulisan <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
                 </article>
               ))}
             </div>
@@ -320,12 +341,14 @@ export const HomePage: React.FC = () => {
               <p className="text-xs font-serif italic text-stone-700 dark:text-stone-300 leading-relaxed mb-2">
                 &ldquo;Ruang untuk mengurai pikiran, menuangkan keresahan, dan merangkai pengalaman menjadi tulisan.&rdquo;
               </p>
-              <Link
-                to="/writing"
-                className="text-xs font-sans font-semibold text-stone-900 dark:text-stone-100 hover:underline inline-flex items-center gap-1.5"
-              >
-                katalog tulisan <ArrowRight className="w-3 h-3" />
-              </Link>
+              <div className="flex items-center justify-end pt-1">
+                <Link
+                  to="/writing"
+                  className="text-xs font-sans font-semibold text-stone-900 dark:text-stone-100 hover:underline inline-flex items-center gap-1.5"
+                >
+                  katalog tulisan <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -333,10 +356,13 @@ export const HomePage: React.FC = () => {
         {/* Kolom Kanan (68% / 8 cols): MUSIK PILIHAN (The Acoustic Spotlight Hero) */}
         <div className="lg:col-span-8 flex flex-col pt-8 lg:pt-0 border-t lg:border-t-0 border-[#E2DAC8] dark:border-[#2D2B26]">
           {/* Kicker & Meta */}
-          <div className="flex items-center gap-3 mb-3 sm:mb-4">
-            <span className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-[0.22em] uppercase text-stone-600 dark:text-stone-400">
+          <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3 sm:mb-4">
+            <Disc3 className="w-3.5 h-3.5 animate-spin-slow text-stone-600 dark:text-stone-400" />
+            <span className="font-semibold text-stone-800 dark:text-stone-200">
               Musik · Sorotan
             </span>
+            <span>·</span>
+            <span>Rilisan {featuredRelease.releaseType.toUpperCase()}</span>
           </div>
 
           {/* Headline Song Title */}
@@ -349,15 +375,17 @@ export const HomePage: React.FC = () => {
             </h2>
           </Link>
 
-          <p className="text-base sm:text-lg font-serif italic text-stone-700 dark:text-stone-300 leading-relaxed mb-6 max-w-2xl">
-            &ldquo;Petikan gitar nilon mentah dan vokal lirih tentang momen ketika kita tahu harus melangkah, namun tetap diam di ambang pintu.&rdquo;
-          </p>
+          {(featuredTrack.description || featuredRelease.description) && (
+            <p className="text-base sm:text-lg font-serif italic text-stone-700 dark:text-stone-300 leading-relaxed mb-6 max-w-2xl">
+              &ldquo;{featuredTrack.description || featuredRelease.description}&rdquo;
+            </p>
+          )}
 
           {/* Spotlight Music Box: Vinyl Artwork + Interactive Player */}
-          <div className="bg-[#EFE9DF]/80 dark:bg-[#1C1B18]/80 p-6 sm:p-8 border border-[#E2DAC8] dark:border-[#2D2B26] mb-8">
-            <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start mb-6">
+          <div className="bg-[#EFE9DF]/80 dark:bg-[#1C1B18]/80 p-5 sm:p-8 border border-[#E2DAC8] dark:border-[#2D2B26] mb-8">
+            <div className="flex flex-col md:flex-row gap-5 md:gap-8 items-start mb-6">
               {/* Square Vinyl Sleeve Cover */}
-              <div className="w-36 sm:w-44 aspect-square shrink-0 overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8] dark:border-[#2D2B26] shadow-sm relative">
+              <div className="w-32 sm:w-44 aspect-square shrink-0 overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8] dark:border-[#2D2B26] shadow-sm relative">
                 {featuredRelease.coverArtUrl && (
                   <img
                     src={featuredRelease.coverArtUrl}
@@ -366,23 +394,17 @@ export const HomePage: React.FC = () => {
                     loading="lazy"
                   />
                 )}
-                <span className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-stone-900/80 text-white text-[9px] font-mono uppercase tracking-wider">
-                  Solo Demo
-                </span>
               </div>
 
               {/* Player & Details */}
               <div className="flex-1 min-w-0 w-full flex flex-col justify-between">
                 <div>
                   <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500 mb-1">
-                    Sor · Studio Rekam Sisi Selatan · 2026
+                    {featuredRelease.title} · {featuredRelease.displayYear}
                   </div>
-                  <h3 className="text-xl font-serif font-bold text-stone-900 dark:text-stone-100">
-                    Dengarkan Rekaman Mentah
+                  <h3 className="text-lg sm:text-xl font-serif font-bold text-stone-900 dark:text-stone-100">
+                    {featuredTrack.title}
                   </h3>
-                  <p className="text-xs text-stone-600 dark:text-stone-400 font-sans mt-1">
-                    Direkam larut malam dalam satu ruangan tanpa metronom atau autotune.
-                  </p>
                 </div>
 
                 {/* Embedded HTML5 Audio Player */}
@@ -395,40 +417,45 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* Behind the song & Lyric snippet */}
-            <div className="pt-6 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-sans">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-2">
-                  Catatan di Balik Lagu
-                </p>
-                <p className="text-stone-700 dark:text-stone-300 leading-relaxed font-serif italic">
-                  &ldquo;Melodi gitar ini muncul pertama kali di nada dasar D mayor terbuka (open D), memberikan ruang dengar yang lega dan sedikit murung.&rdquo;
-                </p>
-              </div>
+            {/* Catatan di Balik Lagu & Sepenggal Lirik (HANYA DITAMPILKAN JIKA ADA DATA REAL) */}
+            {(featuredBehindNote || featuredLyricSnippet) && (
+              <div className="pt-5 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 grid grid-cols-1 md:grid-cols-2 gap-5 text-xs font-sans">
+                {featuredBehindNote && (
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-2">
+                      Catatan di Balik Lagu
+                    </p>
+                    <p className="text-stone-700 dark:text-stone-300 leading-relaxed font-serif italic line-clamp-4">
+                      &ldquo;{featuredBehindNote}&rdquo;
+                    </p>
+                  </div>
+                )}
 
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-2">
-                  sepenggal lirik
-                </p>
-                <p className="text-stone-600 dark:text-stone-400 leading-relaxed font-serif">
-                  Kopi sudah mendingin di sudut meja,<br />
-                  buku-buku terbuka menatap tanpa kata...
-                </p>
+                {featuredLyricSnippet && (
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-2">
+                      Sepenggal Lirik
+                    </p>
+                    <p className="text-stone-600 dark:text-stone-400 leading-relaxed font-serif whitespace-pre-line line-clamp-4">
+                      {featuredLyricSnippet}
+                    </p>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
 
-            <div className="mt-6 pt-4 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 flex items-center justify-between text-xs">
-              <Link
-                to={`/music/tracks/${featuredTrack.slug}`}
-                className="text-stone-900 dark:text-stone-100 font-semibold inline-flex items-center gap-1.5 hover:underline"
-              >
-                lihat lengkap <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+            <div className="mt-5 pt-4 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 flex items-center justify-between text-xs">
               <Link
                 to="/music"
                 className="text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 text-xs"
               >
                 jelajahi katalog musik →
+              </Link>
+              <Link
+                to={`/music/releases/${featuredRelease.slug}`}
+                className="text-stone-900 dark:text-stone-100 font-semibold inline-flex items-center gap-1.5 hover:underline"
+              >
+                buka rilisan <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
@@ -462,12 +489,14 @@ export const HomePage: React.FC = () => {
               <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 font-sans leading-relaxed mb-4">
                 Sorside bukan ruang bising yang menuntut algoritma. Ini adalah arsip personal dan publikasi kreatif tempat saya mencatat pengamatan kota, mengurai keraguan manusiawi, dan merekam petikan nada akustik yang lahir di sela-sela malam.
               </p>
-              <Link
-                to="/about"
-                className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-stone-900 dark:text-stone-200 hover:text-stone-600 dark:hover:text-stone-400 transition-colors underline underline-offset-4"
-              >
-                baca lengkap <ArrowRight className="w-3 h-3" />
-              </Link>
+              <div className="flex items-center justify-end">
+                <Link
+                  to="/about"
+                  className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-stone-900 dark:text-stone-200 hover:text-stone-600 dark:hover:text-stone-400 transition-colors underline underline-offset-4"
+                >
+                  baca lengkap <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

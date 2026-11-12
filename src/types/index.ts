@@ -1,4 +1,5 @@
 export type ThemeMode = 'light' | 'dark' | 'system';
+export type FontFamilyOption = 'sans' | 'serif' | 'mono';
 
 export interface Article {
   slug: string;
@@ -15,4 +16,5 @@ export interface Article {
   status?: 'published' | 'draft';
   featured?: boolean;
   relatedTrackSlug?: string;
+  fontFamily?: FontFamilyOption;
 }

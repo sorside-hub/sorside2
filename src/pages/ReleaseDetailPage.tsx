@@ -10,8 +10,8 @@ const formatIndonesianDate = (dateStr: string, fallbackYear: string): string => 
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return fallbackYear;
     const months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
     ];
     return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   } catch {
@@ -148,7 +148,7 @@ export const ReleaseDetailPage: React.FC = () => {
       {/* 2. HERO HEADER RILISAN: GRID LEBAR */}
       <header className="w-full border-b border-[#E2DAC8] dark:border-[#2D2B26] py-10 sm:py-14 lg:py-16">
         <div className="w-full px-6 lg:px-12 xl:px-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-14 items-start">
             {/* Kolom Kiri (lg:col-span-5): Cover Vinyl 1:1 & Platform Streaming */}
             <div className="lg:col-span-5 flex flex-col items-center sm:items-start">
               <div className="w-full max-w-md aspect-square overflow-hidden bg-stone-200 dark:bg-stone-800 border border-[#E2DAC8] dark:border-[#2D2B26] shadow-sm relative group">
@@ -165,15 +165,6 @@ export const ReleaseDetailPage: React.FC = () => {
                   </div>
                 )}
 
-                {/* Badge Format & Tahun di Pojok Sampul */}
-                <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
-                  <span className="px-2 py-0.5 bg-stone-900/85 text-white text-[10px] font-mono uppercase tracking-wider">
-                    {release.releaseType.toUpperCase()}
-                  </span>
-                  <span className="px-2 py-0.5 bg-stone-900/85 text-white text-[10px] font-mono uppercase tracking-wider">
-                    {release.displayYear}
-                  </span>
-                </div>
               </div>
 
               {/* Streaming Platform Badges */}
@@ -210,12 +201,6 @@ export const ReleaseDetailPage: React.FC = () => {
                   </span>
                   <span>·</span>
                   <span>{dateLabel}</span>
-                  {totalDurationLabel && (
-                    <>
-                      <span>·</span>
-                      <span>{totalDurationLabel}</span>
-                    </>
-                  )}
                 </div>
 
                 <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-stone-900 dark:text-stone-50 leading-[1.12] tracking-tight">
@@ -227,40 +212,11 @@ export const ReleaseDetailPage: React.FC = () => {
                     &ldquo;{release.description}&rdquo;
                   </p>
                 )}
-
-                {/* Spesifikasi Arsip Ringkas (Bersih tanpa teks teknis gak guna) */}
-                <div className="mt-6 pt-5 pb-2 border-t border-[#E2DAC8]/80 dark:border-[#2D2B26]/80 flex flex-wrap gap-8 text-xs font-sans">
-                  <div>
-                    <span className="text-[10px] font-mono uppercase text-stone-500 block">Katalog ID</span>
-                    <span className="font-semibold text-stone-900 dark:text-stone-100">
-                      SOR-{release.releaseType.toUpperCase()}-{String(currentIndex + 1).padStart(2, '0')}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-mono uppercase text-stone-500 block">
-                      {isSingle ? 'Durasi Lagu' : 'Jumlah Lagu'}
-                    </span>
-                    <span className="font-semibold text-stone-900 dark:text-stone-100">
-                      {isSingle ? leadTrack?.duration || totalDurationLabel : `${tracks.length} Lagu`}
-                    </span>
-                  </div>
-                  {!isSingle && totalDurationLabel && (
-                    <div>
-                      <span className="text-[10px] font-mono uppercase text-stone-500 block">Total Durasi</span>
-                      <span className="font-semibold text-stone-900 dark:text-stone-100">{totalDurationLabel}</span>
-                    </div>
-                  )}
-                </div>
               </div>
 
-              {/* Pemutar Audio Langsung: HANYA untuk Single (Di EP/Album audio hanya ada di trek masing-masing) */}
+              {/* Pemutar Audio Langsung: HANYA untuk Single */}
               {isSingle && (
                 <div className="mt-8 pt-6 border-t border-[#E2DAC8] dark:border-[#2D2B26]">
-                  <div className="flex items-center justify-between mb-2.5">
-                    <p className="text-[10px] font-sans font-semibold uppercase tracking-widest text-stone-500 dark:text-stone-400">
-                      Putar Lagu Ini
-                    </p>
-                  </div>
                   <AudioPlayer src={leadTrack?.audioUrl || release.audioUrl} title={release.title} />
                 </div>
               )}
@@ -278,18 +234,10 @@ export const ReleaseDetailPage: React.FC = () => {
           <section className="w-full border-t border-b border-[#E2DAC8] dark:border-[#2D2B26] bg-[#EFE9DF]/30 dark:bg-[#181714]/30 py-12 sm:py-16 my-10">
             <div className="w-full px-6 lg:px-12 xl:px-16">
               <div className="max-w-6xl mx-auto">
-                <div className="flex items-center justify-between pb-4 mb-8 border-b border-[#E2DAC8]/80 dark:border-[#2D2B26]/80">
-                  <div>
-                    <span className="text-[10px] font-sans font-semibold tracking-[0.25em] uppercase text-stone-500 dark:text-stone-400 block mb-1">
-                      Naskah Lirik Resmi
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100">
-                      Lirik Lagu — {release.title}
-                    </h2>
-                  </div>
-                  <span className="text-xs font-mono text-stone-500 hidden sm:block">
-                    {singleStanzas.length} Bait · Single
-                  </span>
+                <div className="pb-4 mb-8 border-b border-[#E2DAC8]/80 dark:border-[#2D2B26]/80">
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100">
+                    Naskah Lirik
+                  </h2>
                 </div>
 
                 {/* Grid 3 Kolom Lirik Bersebelahan di Desktop */}

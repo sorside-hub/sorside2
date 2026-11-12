@@ -13,6 +13,20 @@ const FORMAT_TABS: { id: ReleaseTab; label: string }[] = [
   { id: 'album', label: 'album' },
 ];
 
+const formatIndonesianDate = (dateStr: string, fallbackYear: string): string => {
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return fallbackYear;
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+    ];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  } catch {
+    return fallbackYear;
+  }
+};
+
 export const MusicPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get('format') as ReleaseTab) || 'all';
@@ -191,8 +205,8 @@ export const MusicPage: React.FC = () => {
             </span>
           </div>
 
-          <div className="bg-[#EFE9DF]/80 dark:bg-[#1A1916]/80 p-6 sm:p-10 border border-[#E2DAC8] dark:border-[#2D2B26]">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+          <div className="bg-[#EFE9DF]/80 dark:bg-[#1A1916]/80 p-5 sm:p-8 lg:p-10 border border-[#E2DAC8] dark:border-[#2D2B26]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-14 items-start">
               {/* Cover Sleeve Vinyl Kiri */}
               <div className="lg:col-span-4 flex flex-col items-center sm:items-start">
                 <Link
@@ -207,70 +221,65 @@ export const MusicPage: React.FC = () => {
                       loading="eager"
                     />
                   )}
-                  <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 bg-stone-900/85 text-white text-[9px] font-mono uppercase tracking-wider">
-                      {latestRelease.displayYear}
-                    </span>
-                    <span className="px-1.5 py-0.5 bg-stone-900/85 text-white text-[9px] font-mono uppercase tracking-wider">
-                      {latestRelease.releaseType.toUpperCase()}
-                    </span>
-                  </div>
                 </Link>
 
-                {/* Platform Streaming Badges */}
-                <div className="mt-5 flex flex-wrap gap-2 text-[11px] font-sans">
-                  {latestRelease.streamingLinks?.map((link) => (
-                    <a
-                      key={link.platform}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-2.5 py-1 bg-stone-200/70 dark:bg-stone-800/70 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 transition-colors inline-flex items-center gap-1"
-                    >
-                      <span>{link.platform}</span>
-                      <ExternalLink className="w-2.5 h-2.5 opacity-60" />
-                    </a>
-                  ))}
-                </div>
+                {/* Platform Streaming Badges (hanya tampil jika ada link) */}
+                {latestRelease.streamingLinks && latestRelease.streamingLinks.length > 0 && (
+                  <div className="mt-3 sm:mt-5 flex flex-wrap gap-2 text-[11px] font-sans">
+                    {latestRelease.streamingLinks.map((link) => (
+                      <a
+                        key={link.platform}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2.5 py-1 bg-stone-200/70 dark:bg-stone-800/70 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 transition-colors inline-flex items-center gap-1"
+                      >
+                        <span>{link.platform}</span>
+                        <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Rincian Rilisan Kanan */}
               <div className="lg:col-span-8 flex flex-col justify-between">
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-1.5">
-                    Rilisan {latestRelease.releaseType.toUpperCase()} · Studio Kamar Sisi Selatan
+                  <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2 sm:mb-3">
+                    <Disc3 className="w-3.5 h-3.5 animate-spin-slow text-stone-600 dark:text-stone-400" />
+                    <span className="font-semibold text-stone-800 dark:text-stone-200">
+                      Rilisan {latestRelease.releaseType.toUpperCase()}
+                    </span>
+                    <span>·</span>
+                    <span>{formatIndonesianDate(latestRelease.releaseDate, latestRelease.displayYear)}</span>
                   </div>
                   <Link to={`/music/releases/${latestRelease.slug}`}>
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 dark:text-stone-50 hover:text-stone-600 dark:hover:text-stone-300 transition-colors tracking-tight leading-tight">
+                    <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 dark:text-stone-50 hover:text-stone-600 dark:hover:text-stone-300 transition-colors tracking-tight leading-tight">
                       {latestRelease.title}
                     </h2>
                   </Link>
 
-                  <p className="mt-4 text-sm sm:text-base text-stone-700 dark:text-stone-300 font-sans leading-relaxed max-w-2xl">
+                  <p className="mt-2.5 sm:mt-4 text-xs sm:text-base text-stone-700 dark:text-stone-300 font-sans leading-relaxed max-w-2xl">
                     {latestRelease.description}
                   </p>
                 </div>
 
                 {/* Pemutar Audio Langsung untuk Lagu Terbaru Ini */}
-                <div className="mt-8 pt-6 border-t border-[#E2DAC8]/80 dark:border-[#2D2B26]/80">
-                  <p className="text-[10px] font-sans uppercase tracking-widest text-stone-500 mb-3">
-                    Dengarkan Rekaman Audio
-                  </p>
+                <div className="mt-5 pt-4 sm:mt-8 sm:pt-6 border-t border-[#E2DAC8]/80 dark:border-[#2D2B26]/80">
                   <AudioPlayer
                     src={latestReleaseTrack?.audioUrl || latestRelease?.audioUrl}
                     title={latestReleaseTrack?.title || latestRelease?.title || 'Rekaman Audio'}
                   />
                 </div>
 
-                {/* Aksi Buka Rilisan */}
-                <div className="mt-8 pt-4 flex items-center justify-between">
+                {/* Aksi Buka Rilisan (Rata Kanan untuk jangkauan jempol) */}
+                <div className="mt-4 pt-3 sm:mt-6 sm:pt-4 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 flex items-center justify-end">
                   <Link
                     to={`/music/releases/${latestRelease.slug}`}
-                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-sans font-semibold tracking-wide text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300 transition-colors border-b-2 border-stone-900 dark:border-stone-100 pb-0.5"
+                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-sans font-semibold text-stone-900 dark:text-stone-100 hover:underline"
                   >
-                    buka catatan & lirik {latestRelease.releaseType} <ArrowRight className="w-3.5 h-3.5" />
+                    buka rilisan <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
-                  <span className="text-[11px] font-mono text-stone-500">SOR-{latestRelease.releaseType.toUpperCase()}-01</span>
                 </div>
               </div>
             </div>
@@ -334,21 +343,13 @@ export const MusicPage: React.FC = () => {
                           sorside music
                         </div>
                       )}
-                      <div className="absolute bottom-2 left-2 flex items-center gap-1.5">
-                        <span className="px-1.5 py-0.5 bg-stone-900/80 text-white text-[9px] font-mono uppercase tracking-wider">
-                          {release.releaseType}
-                        </span>
-                        <span className="px-1.5 py-0.5 bg-stone-900/80 text-white text-[9px] font-mono uppercase tracking-wider">
-                          {release.displayYear}
-                        </span>
-                      </div>
                     </Link>
 
                     {/* Info Rilisan */}
                     <div>
-                      <div className="text-[10px] font-mono uppercase tracking-wider text-stone-500 mb-1 flex items-center justify-between">
-                        <span>{release.releaseType.toUpperCase()} · {release.displayYear}</span>
-                        <span>{tracks.length} Lagu</span>
+                      <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-stone-500 mb-1.5">
+                        <Disc3 className="w-3 h-3 animate-spin-slow text-stone-600 dark:text-stone-400" />
+                        <span>Rilisan {release.releaseType.toUpperCase()} · {release.displayYear}</span>
                       </div>
 
                       <Link to={`/music/releases/${release.slug}`}>
@@ -361,44 +362,43 @@ export const MusicPage: React.FC = () => {
                         {release.description}
                       </p>
 
-                      {/* Mini Tracklist di dalam Rilisan (Dengan highlight jika trek cocok dengan pencarian) */}
-                      <div className="mt-3 pt-2.5 border-t border-[#E2DAC8]/60 dark:border-[#2D2B26]/60 space-y-1">
-                        {tracks.map((trk, i) => {
-                          const isMatchedTrack = Boolean(query && trk.title.toLowerCase().includes(query));
+                      {/* Mini Tracklist di dalam Rilisan (HANYA untuk EP / Album) */}
+                      {release.releaseType !== 'single' && tracks.length > 0 && (
+                        <div className="mt-3 pt-2.5 border-t border-[#E2DAC8]/60 dark:border-[#2D2B26]/60 space-y-1">
+                          {tracks.map((trk, i) => {
+                            const isMatchedTrack = Boolean(query && trk.title.toLowerCase().includes(query));
 
-                          return (
-                            <Link
-                              key={trk.id}
-                              to={`/music/tracks/${trk.slug}`}
-                              className={`text-[11px] font-sans flex items-baseline justify-between py-1 px-1.5 -mx-1.5 rounded transition-colors ${
-                                isMatchedTrack
-                                  ? 'bg-amber-100/90 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-semibold border-l-2 border-amber-600 dark:border-amber-400'
-                                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200/40 dark:hover:bg-stone-800/40'
-                              }`}
-                            >
-                              <span className="truncate flex items-baseline gap-1.5">
-                                <span className="font-mono text-[10px] text-stone-400">0{i + 1}.</span>
-                                <span className="truncate">{trk.title}</span>
-                              </span>
-                              <span className="font-mono text-[10px] text-stone-400 ml-2 shrink-0">{trk.duration}</span>
-                            </Link>
-                          );
-                        })}
-                      </div>
+                            return (
+                              <Link
+                                key={trk.id}
+                                to={`/music/tracks/${trk.slug}`}
+                                className={`text-[11px] font-sans flex items-baseline justify-between py-1 px-1.5 -mx-1.5 rounded transition-colors ${
+                                  isMatchedTrack
+                                    ? 'bg-amber-100/90 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 font-semibold border-l-2 border-amber-600 dark:border-amber-400'
+                                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200/40 dark:hover:bg-stone-800/40'
+                                }`}
+                              >
+                                <span className="truncate flex items-baseline gap-1.5">
+                                  <span className="font-mono text-[10px] text-stone-400">0{i + 1}.</span>
+                                  <span className="truncate">{trk.title}</span>
+                                </span>
+                                <span className="font-mono text-[10px] text-stone-400 ml-2 shrink-0">{trk.duration}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  {/* Bottom Action Link */}
-                  <div className="pt-4 mt-4 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 flex items-center justify-between text-xs">
+                  {/* Bottom Action Link (Rata kanan untuk jangkauan jempol) */}
+                  <div className="pt-4 mt-4 border-t border-[#E2DAC8]/70 dark:border-[#2D2B26]/70 flex items-center justify-end text-xs">
                     <Link
                       to={`/music/releases/${release.slug}`}
                       className="font-semibold text-stone-900 dark:text-stone-100 hover:underline inline-flex items-center gap-1"
                     >
                       buka rilisan <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
-                    <span className="text-[10px] font-mono text-stone-500 uppercase">
-                      {release.releaseType}
-                    </span>
                   </div>
                 </article>
               );
@@ -464,18 +464,16 @@ export const MusicPage: React.FC = () => {
                             loading="lazy"
                           />
                         )}
-                        <span className="absolute bottom-2 left-2 px-1.5 py-0.5 bg-stone-900/85 text-white text-[9px] font-mono uppercase tracking-wider">
-                          {featRel.releaseType.toUpperCase()} Pilihan
-                        </span>
                       </Link>
                     </div>
 
                     {/* Info Rilisan & Daftar Lagu */}
                     <div className="lg:col-span-8 space-y-4">
                       <div>
-                        <span className="text-[10px] font-mono uppercase tracking-widest text-stone-500">
-                          {featRel.releaseType.toUpperCase()} · {featRel.displayYear} · {tracks.length} Lagu
-                        </span>
+                        <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-stone-500 mb-1.5">
+                          <Disc3 className="w-3.5 h-3.5 animate-spin-slow text-stone-600 dark:text-stone-400" />
+                          <span>Rilisan {featRel.releaseType.toUpperCase()} · {featRel.displayYear}</span>
+                        </div>
                         <Link to={`/music/releases/${featRel.slug}`}>
                           <h3 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 dark:text-stone-100 hover:text-stone-600 dark:hover:text-stone-300 transition-colors mt-1">
                             {featRel.title}
@@ -507,12 +505,12 @@ export const MusicPage: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="pt-2">
+                      <div className="pt-3 flex items-center justify-end">
                         <Link
                           to={`/music/releases/${featRel.slug}`}
                           className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-stone-900 dark:text-stone-100 hover:underline"
                         >
-                          buka rincian lengkap {featRel.releaseType} ini <ArrowRight className="w-3.5 h-3.5" />
+                          buka rilisan <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
                       </div>
                     </div>
